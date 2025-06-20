@@ -15,13 +15,13 @@ LIVE - http://fornevercollective.github.io/jawta/index.html DEMO
 #
 -
 #
-<img width="200" alt="jawta_d-07" src="https://github.com/user-attachments/assets/c0bb770f-7fad-45e7-a4d2-ccc96064397e" />
-<img width="200" alt="jawta_d-06" src="https://github.com/user-attachments/assets/9487867b-7f20-4e39-97b1-a82bcd4537cb" />
-<img width="200" alt="jawta_d-05" src="https://github.com/user-attachments/assets/276a6723-3dab-4302-b261-b9ed4ac62e30" />
-<img width="200" alt="jawta_d-04" src="https://github.com/user-attachments/assets/dbf7bf75-61c2-45e0-8afc-5f15b5bdcfc8" />
-<img width="200" alt="jawta_d-03" src="https://github.com/user-attachments/assets/9eec202e-a9ac-4ab2-80af-5268e573c181" />
-<img width="200" alt="jawta_d-02" src="https://github.com/user-attachments/assets/8e813629-e0f5-4bda-bea2-6652b86402b3" />
-<img width="200" alt="jawta_d-01" src="https://github.com/user-attachments/assets/48d34c4b-1917-40fb-9b99-f645316a6882" />
+<img width="600" alt="jawta_d-07" src="https://github.com/user-attachments/assets/c0bb770f-7fad-45e7-a4d2-ccc96064397e" />
+<img width="600" alt="jawta_d-06" src="https://github.com/user-attachments/assets/9487867b-7f20-4e39-97b1-a82bcd4537cb" />
+<img width="600" alt="jawta_d-05" src="https://github.com/user-attachments/assets/276a6723-3dab-4302-b261-b9ed4ac62e30" />
+<img width="600" alt="jawta_d-04" src="https://github.com/user-attachments/assets/dbf7bf75-61c2-45e0-8afc-5f15b5bdcfc8" />
+<img width="600" alt="jawta_d-03" src="https://github.com/user-attachments/assets/9eec202e-a9ac-4ab2-80af-5268e573c181" />
+<img width="600" alt="jawta_d-02" src="https://github.com/user-attachments/assets/8e813629-e0f5-4bda-bea2-6652b86402b3" />
+<img width="600" alt="jawta_d-01" src="https://github.com/user-attachments/assets/48d34c4b-1917-40fb-9b99-f645316a6882" />
 #
 
 # jawta - Signal Processing Application
