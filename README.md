@@ -3,8 +3,8 @@
 LIVE - http://fornevercollective.github.io/jawta/index.html DEMO
 # jawta
 <img width="1118" alt="jawta-intro" src="https://github.com/user-attachments/assets/2d4b0118-b637-400c-a14e-3d36a81acce6" />
-jawta+sigintel
-wip
+> jawta+sigintel
+> wip
 #
 <img width="200" alt="jawta_m-06" src="https://github.com/user-attachments/assets/3fccfe50-bc0d-4791-b02d-86181f12b8d9" />
 <img width="200" alt="jawta_m-05" src="https://github.com/user-attachments/assets/d79508ab-538b-44a1-b235-5872c4ddae2a" />
@@ -12,6 +12,8 @@ wip
 <img width="200" alt="jawta_m-03" src="https://github.com/user-attachments/assets/bff1977b-9eb4-49f9-ac0c-34ca2014e8c0" />
 <img width="200" alt="jawta_m-02" src="https://github.com/user-attachments/assets/f42ac402-082a-41c0-8066-af3266fd7277" />
 <img width="200" alt="jawta_m-01" src="https://github.com/user-attachments/assets/64aa27a9-74f7-4e1f-8400-f0eb534d8a51" />
+#
+-
 #
 <img width="200" alt="jawta_d-07" src="https://github.com/user-attachments/assets/c0bb770f-7fad-45e7-a4d2-ccc96064397e" />
 <img width="200" alt="jawta_d-06" src="https://github.com/user-attachments/assets/9487867b-7f20-4e39-97b1-a82bcd4537cb" />
