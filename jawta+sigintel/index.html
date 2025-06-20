@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jawta - Signal Processing Application - Developer Portal</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'%3E%3Cpath d='M9 18V5l12-2v13'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Ccircle cx='18' cy='16' r='3'/%3E%3C/svg%3E">
+    
+    <!-- Meta tags for SEO and sharing -->
+    <meta name="description" content="jawta - Advanced signal processing and intelligence application with dark theme, mobile-first design, and comprehensive text conversion utilities.">
+    <meta name="keywords" content="signal processing, Morse code, text conversion, audio processing, RF communication, React, TypeScript, Tailwind CSS">
+    <meta name="author" content="jawta Signal Processing">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jawta-signal.github.io/">
+    <meta property="og:title" content="jawta Signal Processing Application">
+    <meta property="og:description" content="Advanced signal processing platform with Morse code conversion, text utilities, and real-time communication capabilities.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200&h=630&fit=crop">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://jawta-signal.github.io/">
+    <meta property="twitter:title" content="jawta Signal Processing Application">
+    <meta property="twitter:description" content="Advanced signal processing platform with Morse code conversion, text utilities, and real-time communication capabilities.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200&h=630&fit=crop">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        :root {
+            --jawta-bg: #000000;
+            --jawta-surface: #121212;
+            --jawta-border: rgba(255, 255, 255, 0.1);
+            --jawta-text: #ffffff;
+            --jawta-muted: rgba(255, 255, 255, 0.7);
+            --jawta-accent: rgba(255, 255, 255, 0.5);
+            --jawta-primary: #06b6d4;
+            --jawta-secondary: #7c3aed;
+        }
+        
+        body {
+            background: var(--jawta-bg);
+            color: var(--jawta-text);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .jawta-card {
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            transition: all 0.3s ease;
+        }
+        
+        .jawta-card:hover {
+            border-color: var(--jawta-primary);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        }
+        
+        .status-indicator {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border: 2px solid var(--jawta-border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--jawta-bg);
+        }
+        
+        .iframe-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: opacity 0.3s ease;
+        }
+        
+        .iframe-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .signal-grid {
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .sdk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(6, 182, 212, 0.2);
+            border: 1px solid var(--jawta-border);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: var(--jawta-text);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .sdk-badge:hover {
+            background: rgba(6, 182, 212, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+        }
+        
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid var(--jawta-border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        
+        .terminal-window {
+            background: #0a0a0a;
+            border: 1px solid var(--jawta-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            background: var(--jawta-surface);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--jawta-border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+        
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+        }
+        
+        .neon-glow-purple {
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+        }
+        
+        .sound-wave-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+        
+        .mobile-first-badge {
+            background: linear-gradient(90deg, #06b6d4, #7c3aed);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 640px) {
+            .mobile-touch-target {
+                min-height: 80px;
+                min-width: 44px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen signal-grid">
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 bg-cyan-600 rounded flex items-center justify-center">
+                        <svg class="sound-wave-icon w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <circle cx="18" cy="16" r="3"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-lg font-semibold text-white">JAWTA SIGNAL PROCESSING</h1>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-cyan-500 rounded-full status-indicator"></div>
+                        <span class="text-sm text-gray-400">DEVELOPER PORTAL</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="mobile-first-badge">
+                        MOBILE-FIRST DESIGN
+                    </div>
+                    <div class="text-sm text-gray-400 font-mono">
+                        BUILD: v0.3.0 | STATUS: OPERATIONAL
+                    </div>
+                    <button id="fullscreen-btn" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded text-sm transition-colors neon-glow">
+                        FULLSCREEN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Live Application Section -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">Live Signal Processing Interface</h2>
+                    <p class="text-gray-400">Interactive demo of the deployed jawta signal processing application</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="sdk-badge">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        FIGMA DEPLOYED
+                    </div>
+                    <div class="sdk-badge">
+                        <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                        REAL-TIME
+                    </div>
+                </div>
+            </div>
+            
+            <div class="iframe-container">
+                <div id="iframe-overlay" class="iframe-overlay">
+                    <div class="text-center">
+                        <div class="animate-spin w-8 h-8 border-2 border-gray-600 border-t-cyan-400 rounded-full mx-auto mb-4"></div>
+                        <p class="text-gray-400">Loading Signal Processing Interface...</p>
+                        <button id="load-iframe" class="mt-4 px-4 py-2 bg-cyan-700 hover:bg-cyan-600 border border-cyan-600 rounded transition-colors neon-glow">
+                            LAUNCH APPLICATION
+                        </button>
+                    </div>
+                </div>
+                <iframe 
+                    id="jawta-iframe"
+                    src=""
+                    data-src="https://ideate-poet-95991383.figma.site"
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0"
+                    title="jawta Signal Processing Interface"
+                    allow="fullscreen"
+                    style="border: none;">
+                </iframe>
+            </div>
+            
+            <!-- Application Controls -->
+            <div class="mt-4 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button id="reload-app" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded text-sm transition-colors">
+                        ↻ RELOAD
+                    </button>
+                    <button id="refresh-data" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded text-sm transition-colors">
+                        ⟲ REFRESH SIGNALS
+                    </button>
+                    <div class="text-xs text-gray-500 font-mono">
+                        Last Updated: <span id="last-updated">--</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-gray-500">SIGNAL STRENGTH:</span>
+                    <div class="w-16 h-2 bg-gray-800 rounded overflow-hidden">
+                        <div class="h-full bg-cyan-500 w-4/5 neon-glow"></div>
+                    </div>
+                    <span class="text-xs text-gray-400">85%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features Hub -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold text-white mb-6">Core Signal Processing Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Text & Morse Processing -->
+                <div class="jawta-card rounded-lg p-6 feature-highlight">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-yellow-600 rounded flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-white">Text & Morse Code</h3>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Advanced text conversion utilities with Morse code visualization, T9 conversion, and mobile pattern generation.</p>
+                    <div class="space-y-2">
+                        <div class="sdk-badge block w-full text-center">
+                            ⚡ Real-time Conversion
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            📱 Mobile Pattern Support
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            🎵 Audio Playback
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signal Intelligence -->
+                <div class="jawta-card rounded-lg p-6 feature-highlight">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-cyan-600 rounded flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7 12l2 2 6-6"/>
+                                <path d="M12 6.5L8.5 10l1.5 1.5L12 9.5l2 2L15.5 10 12 6.5z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-white">Signal Intelligence</h3>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Real-time signal processing with spectrum analysis, frequency monitoring, and intelligent pattern recognition.</p>
+                    <div class="space-y-2">
+                        <div class="sdk-badge block w-full text-center">
+                            📊 Spectrum Analysis
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            📡 RF Processing
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            🎯 Pattern Recognition
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Processing -->
+                <div class="jawta-card rounded-lg p-6 feature-highlight">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-purple-600 rounded flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-white">Audio Processing</h3>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">32-band equalizer, multi-band transmission, and advanced audio signal processing capabilities.</p>
+                    <div class="space-y-2">
+                        <div class="sdk-badge block w-full text-center">
+                            🎛️ 32-Band EQ
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            📻 Multi-Band TX
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            🔊 Real-time Processing
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile-First Design -->
+                <div class="jawta-card rounded-lg p-6 feature-highlight">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                                <line x1="12" y1="18" x2="12.01" y2="18"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-white">Mobile-First Interface</h3>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">80px touch targets for gloved users, dual-interface design with simplified mobile and advanced desktop modes.</p>
+                    <div class="space-y-2">
+                        <div class="sdk-badge block w-full text-center">
+                            👆 80px Touch Targets
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            📱 Walkie-Talkie Mode
+                        </div>
+                        <div class="sdk-badge block w-full text-center">
+                            🖥️ Desktop Dashboard
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold text-white mb-6">Technology Stack & Integration</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Tech Stack Overview -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">Frontend Architecture</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Framework</span>
+                            <span class="sdk-badge">React 18 + TypeScript</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Styling</span>
+                            <span class="sdk-badge">Tailwind CSS v4</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">UI Components</span>
+                            <span class="sdk-badge">shadcn/ui</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Icons</span>
+                            <span class="sdk-badge">Lucide React</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Audio Processing</span>
+                            <span class="sdk-badge">Web Audio API</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Visualization</span>
+                            <span class="sdk-badge">Canvas API</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Build Tool</span>
+                            <span class="sdk-badge">Vite</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Performance</span>
+                            <span class="sdk-badge">95+ Lighthouse</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Structure -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">Code Metrics & Structure</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Total Files</span>
+                            <span class="sdk-badge">115+ Components</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Lines of Code</span>
+                            <span class="sdk-badge">~13,500 LOC</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Signal Processing</span>
+                            <span class="sdk-badge">12 Modules</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Visualization</span>
+                            <span class="sdk-badge">18 Components</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Text Utilities</span>
+                            <span class="sdk-badge">7 Converters</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Mobile Support</span>
+                            <span class="sdk-badge">100% Responsive</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Bundle Size</span>
+                            <span class="sdk-badge">~185 KB gzipped</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Development Tools -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold text-white mb-6">Development Tools & Quick Start</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Quick Start Terminal -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">Quick Start Commands</h3>
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                            <span class="text-xs text-gray-400 ml-2">jawta-signal-processing</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="code-block">
+<span class="text-green-400"># Clone and setup</span>
+git clone https://github.com/jawta/signal-processing
+cd signal-processing
+npm install
+
+<span class="text-green-400"># Development server</span>
+npm run dev
+
+<span class="text-green-400"># Build and deploy</span>
+npm run build
+npm run preview
+
+<span class="text-green-400"># Test signal processing</span>
+npm run test:signals
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signal Processing API -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">Signal Processing API</h3>
+                    <div class="code-block">
+<span class="text-purple-400">import</span> { <span class="text-yellow-400">textToMorse</span>, <span class="text-yellow-400">morseToText</span> } <span class="text-purple-400">from</span> <span class="text-green-300">'./utils/textUtils'</span>;
+
+<span class="text-green-400">// Convert text to Morse code</span>
+<span class="text-purple-400">const</span> <span class="text-yellow-400">morse</span> = <span class="text-blue-400">textToMorse</span>(<span class="text-green-300">"HELLO WORLD"</span>);
+<span class="text-blue-400">console</span>.<span class="text-yellow-400">log</span>(<span class="text-yellow-400">morse</span>);
+<span class="text-green-400">// Output: ".... . .-.. .-.. --- / .-- --- .-. .-.. -.."</span>
+
+<span class="text-green-400">// Initialize signal converter</span>
+<span class="text-purple-400">const</span> <span class="text-yellow-400">converter</span> = <span class="text-purple-400">new</span> <span class="text-blue-400">SignalConverter</span>({
+  <span class="text-cyan-400">activeTab</span>: <span class="text-green-300">'morse'</span>,
+  <span class="text-cyan-400">volume</span>: <span class="text-orange-400">75</span>,
+  <span class="text-cyan-400">isTransmitting</span>: <span class="text-orange-400">false</span>
+});
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Showcase -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold text-white mb-6">Feature Showcase & Capabilities</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="jawta-card rounded-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Text Processing</h3>
+                    <p class="text-green-400 font-semibold">MORSE • T9 • ASCII</p>
+                    <p class="text-xs text-gray-500 mt-1">Real-time conversion</p>
+                </div>
+
+                <div class="jawta-card rounded-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Signal Intelligence</h3>
+                    <p class="text-cyan-400 font-semibold">RF • OPTICAL • AUDIO</p>
+                    <p class="text-xs text-gray-500 mt-1">Multi-spectrum analysis</p>
+                </div>
+
+                <div class="jawta-card rounded-lg p-6 text-center">
+                    <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow-purple">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Mobile Interface</h3>
+                    <p class="text-purple-400 font-semibold">RESPONSIVE • GLOVE-FRIENDLY</p>
+                    <p class="text-xs text-gray-500 mt-1">80px touch targets</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Links & Resources -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold text-white mb-6">Resources & Documentation</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">📚 Documentation</h3>
+                    <div class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Getting Started Guide</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Signal Processing API</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Text Conversion Utilities</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Mobile Implementation</a>
+                    </div>
+                </div>
+                
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">💻 Development</h3>
+                    <div class="space-y-2">
+                        <a href="https://github.com/jawta/signal-processing" target="_blank" class="block text-sm text-gray-400 hover:text-white">GitHub Repository</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Component Library</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">API Reference</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Contributing Guide</a>
+                    </div>
+                </div>
+                
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="font-semibold text-white mb-4">🔧 Tools</h3>
+                    <div class="space-y-2">
+                        <a href="https://www.figma.com/file/jawta-design" target="_blank" class="block text-sm text-gray-400 hover:text-white">Figma Design System</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Signal Testing Suite</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Morse Code Playground</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white">Mobile Simulator</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 bg-black py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Signal Processing</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Morse Code Conversion</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Text Utilities</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Audio Processing</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">RF Communication</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Interface Modes</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Mobile Walkie-Talkie</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Desktop Dashboard</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Signal Intelligence</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Streaming Control</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Developer Tools</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">API Documentation</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Component Guide</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Testing Framework</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Deployment Guide</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Support</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Bug Reports</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Feature Requests</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Community Forum</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-gray-300">Contact Support</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 mt-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <svg class="sound-wave-icon w-5 h-5 text-cyan-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 18V5l12-2v13"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <circle cx="18" cy="16" r="3"/>
+                        </svg>
+                        <p class="text-sm text-gray-500">© 2025 jawta Signal Processing. All rights reserved.</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-xs text-gray-600">VERSION: v0.3.0</span>
+                        <span class="text-xs text-gray-600">|</span>
+                        <span class="text-xs text-gray-600">MOBILE-FIRST DESIGN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Load iframe on demand
+        document.getElementById('load-iframe').addEventListener('click', function() {
+            const iframe = document.getElementById('jawta-iframe');
+            const overlay = document.getElementById('iframe-overlay');
+            
+            iframe.src = iframe.getAttribute('data-src');
+            overlay.classList.add('hidden');
+            
+            // Update timestamp
+            updateTimestamp();
+        });
+
+        // Reload application
+        document.getElementById('reload-app').addEventListener('click', function() {
+            const iframe = document.getElementById('jawta-iframe');
+            iframe.src = iframe.src;
+            updateTimestamp();
+        });
+
+        // Refresh signals simulation
+        document.getElementById('refresh-data').addEventListener('click', function() {
+            updateTimestamp();
+            // Simulate signal refresh
+            setTimeout(() => {
+                console.log('Signals refreshed');
+            }, 500);
+        });
+
+        // Fullscreen toggle
+        document.getElementById('fullscreen-btn').addEventListener('click', function() {
+            const iframe = document.getElementById('jawta-iframe');
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) {
+                iframe.msRequestFullscreen();
+            }
+        });
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const timestamp = now.toLocaleString('en-US', {
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('last-updated').textContent = timestamp;
+        }
+
+        // Initialize
+        updateTimestamp();
+        
+        // Auto-update timestamp every 30 seconds
+        setInterval(updateTimestamp, 30000);
+
+        // Signal strength simulation
+        function simulateSignalStrength() {
+            const strength = Math.floor(Math.random() * 20) + 80; // 80-100%
+            const signalBar = document.querySelector('.bg-cyan-500');
+            if (signalBar) {
+                signalBar.style.width = strength + '%';
+            }
+        }
+
+        setInterval(simulateSignalStrength, 5000);
+
+        // Console ASCII art
+        console.log(`
+    ╔══════════════════════════════════════════════════════════════╗
+    ║                     JAWTA SIGNAL PROCESSING                   ║
+    ║                        DEVELOPER PORTAL                       ║
+    ╠══════════════════════════════════════════════════════════════╣
+    ║  Status: OPERATIONAL                                          ║
+    ║  Build:  v0.3.0                                               ║
+    ║  Features: Morse • Text • Signal • Mobile                     ║
+    ║  Performance: 95+ Lighthouse Score                            ║
+    ╚══════════════════════════════════════════════════════════════╝
+        `);
+        
+        // Add neon glow effects on hover
+        document.querySelectorAll('.sdk-badge').forEach(badge => {
+            badge.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 0 15px rgba(6, 182, 212, 0.7)';
+            });
+            
+            badge.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+            });
+        });
+    </script>
+</body>
+</html>
