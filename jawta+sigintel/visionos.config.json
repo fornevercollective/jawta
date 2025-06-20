@@ -1,0 +1,17 @@
+
+{
+  "name": "Jawta + sigintel",
+  "displayName": "Jawta Signal Intelligence",
+  "description": "Advanced signal processing and analysis application",
+  "visionOS": {
+    "enabled": true,
+    "preferredSurfaceAppearance": "translucent",
+    "requestsTranslucency": true,
+    "supportsMultipleWindows": true,
+    "supportedInterfaceOrientations": ["portrait", "landscape"]
+  },
+  "capabilities": {
+    "audio": true,
+    "microphone": true
+  }
+}

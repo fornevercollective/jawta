@@ -1,0 +1,360 @@
+/* Defining our base color scheme */
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  
+  --primary-color: #06b6d4; /* cyan-500 */
+  --primary-hover: #0ea5e9; /* cyan-600 */
+  --primary-gradient-start: #06b6d4; /* cyan-500 */
+  --primary-gradient-end: #7c3aed; /* violet-600 */
+  
+  --accent-color: #7c3aed; /* violet-600 */
+  --accent-hover: #6d28d9; /* violet-700 */
+  
+  --success-color: #22c55e; /* green-500 */
+  --warning-color: #eab308; /* yellow-500 */
+  --danger-color: #ef4444; /* red-500 */
+  --info-color: #3b82f6; /* blue-500 */
+  
+  /* Signal strength colors */
+  --signal-strong: #22c55e; /* green-500 */
+  --signal-medium: #3b82f6; /* blue-500 */
+  --signal-weak: #eab308; /* yellow-500 */
+  --signal-poor: #ef4444; /* red-500 */
+  
+  /* Neon glow colors */
+  --neon-cyan-glow: 0 0 15px rgba(6, 182, 212, 0.7);
+  --neon-violet-glow: 0 0 15px rgba(124, 58, 237, 0.7);
+  --neon-gradient-glow: 0 0 15px rgba(124, 58, 237, 0.5), 0 0 30px rgba(6, 182, 212, 0.3);
+}
+
+/* Global text color fixes */
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p, span, div {
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--primary-color);
+}
+
+.text-muted-foreground {
+  color: var(--text-secondary);
+}
+
+/* Collapsed sidebar styles */
+.sidebar-collapsed {
+  width: 0 !important;
+  opacity: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+}
+
+/* Grid layout view styles */
+.grid-layout-expanded {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Enhanced hover effects for view toggle buttons */
+.view-toggle-btn {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.view-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+}
+
+.view-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.view-toggle-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  transition: box-shadow 0.2s ease;
+  pointer-events: none;
+}
+
+.view-toggle-btn:focus::after {
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.5), 0 0 15px rgba(124, 58, 237, 0.3);
+}
+
+/* Smooth transitions for layout changes */
+.transition-layout {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Neon glow effects for buttons */
+.btn-neon {
+  position: relative;
+  background-color: transparent;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-neon:hover {
+  box-shadow: var(--neon-gradient-glow);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-neon:active {
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.8) inset;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.15), rgba(124, 58, 237, 0.15));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-neon:hover::before {
+  opacity: 1;
+}
+
+/* Custom glowing tab effects */
+[data-state="active"].tab-neon {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+[data-state="active"].tab-neon::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-end));
+  box-shadow: var(--neon-violet-glow);
+}
+
+/* Subtle animation effects */
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Typing animation effect for terminal */
+.animate-typing {
+  border-right: 2px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: typing 1s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: rgba(34, 197, 94, 0.6) }
+}
+
+/* Enhanced touch targets for mobile */
+@media (max-width: 640px) {
+  button, 
+  .btn, 
+  [role="button"],
+  .touch-target {
+    min-height: 80px;
+    min-width: 44px;
+  }
+  
+  input, 
+  select,
+  .form-control {
+    min-height: 80px;
+  }
+  
+  .tab-content-mobile {
+    padding: 16px;
+  }
+}
+
+/* Improved feed indicators */
+.signal-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  position: relative;
+}
+
+.signal-indicator::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: signal-pulse 1.5s infinite ease-in-out;
+}
+
+.signal-strong {
+  background-color: var(--signal-strong);
+}
+
+.signal-strong::after {
+  background-color: rgba(34, 197, 94, 0.3);
+}
+
+.signal-medium {
+  background-color: var(--signal-medium);
+}
+
+.signal-medium::after {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.signal-weak {
+  background-color: var(--signal-weak);
+}
+
+.signal-weak::after {
+  background-color: rgba(234, 179, 8, 0.3);
+}
+
+.signal-poor {
+  background-color: var(--signal-poor);
+}
+
+.signal-poor::after {
+  background-color: rgba(239, 68, 68, 0.3);
+}
+
+@keyframes signal-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+/* Additional fixes for text visibility in dark theme */
+.bg-black {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.border-border\/30 {
+  border-color: var(--border-color);
+}
+
+input, textarea, select {
+  color: var(--text-primary);
+  background-color: rgba(30, 30, 30, 0.6);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Ensure buttons have visible text */
+button, .btn {
+  color: var(--text-primary);
+}
+
+/* Fix for badge text */
+.badge, [class*="badge-"] {
+  color: var(--text-primary);
+}
+
+/* Popover and dropdown content */
+.popover-content, 
+.dropdown-content,
+.menu-content {
+  background-color: #121212;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Terminal and text visualizers */
+.terminal-text {
+  color: var(--success-color);
+}
+
+.text-feed {
+  color: var(--text-primary);
+}
+
+/* Gradient text effects */
+.gradient-text {
+  background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Enhanced overlay and card backgrounds */
+.card-overlay, .hover-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  border-color: var(--border-color);
+}
+
+/* Navigation active states */
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.2));
+  border-left: 2px solid var(--primary-color);
+}
+
+/* Fix for TabsList */
+[role="tablist"] {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-color: var(--border-color);
+}
+
+[role="tab"] {
+  color: var(--text-primary);
+}
+
+[role="tab"][data-state="active"] {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.3), rgba(124, 58, 237, 0.3));
+  color: var(--text-primary);
+}
