@@ -2,6 +2,7 @@
 #
 LIVE - http://fornevercollective.github.io/jawta/index.html DEMO
 # jawta
+<img width="1118" alt="jawta-intro" src="https://github.com/user-attachments/assets/2d4b0118-b637-400c-a14e-3d36a81acce6" />
 jawta+sigintel
 wip
 #
