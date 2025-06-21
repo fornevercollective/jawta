@@ -28,6 +28,7 @@ import {
   PackageOpen,
   Cloud,
   Globe,
+  Signal,
   Zap,
   MapPin,
   Share2,
@@ -72,6 +73,7 @@ import { SoundWaveLogo } from '../ui/sound-wave-logo';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Checkbox } from '../ui/checkbox';
 import { SpectrumTabView } from './SpectrumTabView';
+import { MobileWalkieTalkieInterface } from '../controls/MobileWalkieTalkieInterface';
 
 interface LiveRadioIntelPageProps {
   onBack?: () => void;
@@ -873,6 +875,88 @@ export function LiveRadioIntelPage({ onBack }: LiveRadioIntelPageProps) {
       
       {/* Main Content Area with Tabs */}
       <div className="flex-1 flex overflow-hidden">
+        {/* Mobile Layout */}
+        {isMobile ? (
+          <div className="flex-1 flex flex-col">
+            {/* Mobile Walkie-Talkie Interface */}
+            <div className="p-3">
+              <MobileWalkieTalkieInterface className="w-full" />
+            </div>
+            
+            {/* Mobile Signal Intelligence Content */}
+            <div className="flex-1 overflow-y-auto p-3">
+              <div className="grid gap-3">
+                {/* Compact spectrum display */}
+                <div className="bg-black/50 border border-border/30 rounded-lg p-3">
+                  <h3 className="text-sm font-medium mb-2 flex items-center">
+                    <BarChart2 className="h-4 w-4 mr-1.5 text-cyan-400" />
+                    Spectrum Monitor
+                  </h3>
+                  <div className="h-32">
+                    <SpectrumAnalyzer 
+                      data={Array.from({length: 64}, (_, i) => Math.random() * 100)}
+                      isActive={streamActive}
+                    />
+                  </div>
+                </div>
+                
+                {/* Active feeds summary */}
+                <div className="bg-black/50 border border-border/30 rounded-lg p-3">
+                  <h3 className="text-sm font-medium mb-2 flex items-center">
+                    <Signal className="h-4 w-4 mr-1.5 text-green-400" />
+                    Active Feeds ({activeFeeds.length})
+                  </h3>
+                  <div className="space-y-1">
+                    {fullAllFeeds
+                      .filter(feed => feed.status === 'active')
+                      .slice(0, 3) // Show only top 3 feeds on mobile
+                      .map(feed => (
+                      <div key={feed.id} className="flex items-center justify-between p-2 bg-black/30 rounded">
+                        <div className="flex items-center gap-2">
+                          {getFeedIcon(feed.type)}
+                          <span className="text-xs truncate">{feed.name}</span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] h-4">
+                          {feed.frequency ? `${feed.frequency.toFixed(2)} MHz` : 'Digital'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Quick controls */}
+                <div className="bg-black/50 border border-border/30 rounded-lg p-3">
+                  <h3 className="text-sm font-medium mb-2 flex items-center">
+                    <Settings className="h-4 w-4 mr-1.5 text-orange-400" />
+                    Quick Controls
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant={isRecording ? 'destructive' : 'outline'} 
+                      size="sm" 
+                      onClick={toggleRecording}
+                      className="h-8"
+                    >
+                      {isRecording ? <Pause className="h-3 w-3 mr-1" /> : <Play className="h-3 w-3 mr-1" />}
+                      {isRecording ? 'Stop' : 'Record'}
+                    </Button>
+                    <Button 
+                      variant={streamActive ? 'default' : 'outline'} 
+                      size="sm" 
+                      onClick={toggleStream}
+                      className="h-8"
+                    >
+                      <Radio className="h-3 w-3 mr-1" />
+                      {streamActive ? 'Streaming' : 'Stream'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Desktop Layout */
+          <>
         {/* Left sidebar - frequency bands, active feeds, and system status */}
         <div 
           className={`transition-layout border-r border-border/30 bg-black
@@ -1122,6 +1206,8 @@ export function LiveRadioIntelPage({ onBack }: LiveRadioIntelPageProps) {
             {renderMainContent()}
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

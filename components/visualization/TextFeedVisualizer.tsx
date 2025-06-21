@@ -4,6 +4,8 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 
 interface TextFeedVisualizerProps {
+  textStream?: string[];
+  height?: string;
   isActive?: boolean;
   feedName?: string;
   className?: string;
@@ -11,17 +13,28 @@ interface TextFeedVisualizerProps {
 }
 
 export function TextFeedVisualizer({
+  textStream,
+  height,
   isActive = true,
   feedName = "Live Text Feed",
   className = "",
   initialData = []
 }: TextFeedVisualizerProps) {
-  const [textData, setTextData] = useState<string[]>(initialData.length > 0 ? initialData : [
+  const [textData, setTextData] = useState<string[]>(
+    textStream && textStream.length > 0 ? textStream : 
+    initialData.length > 0 ? initialData : [
     'Initializing text feed...',
     'Connecting to message source',
     'Handshake complete',
     'Ready to receive data'
   ]);
+  
+  // Update data when textStream changes
+  useEffect(() => {
+    if (textStream && textStream.length > 0) {
+      setTextData(textStream);
+    }
+  }, [textStream]);
   
   // Simulate new data coming in
   useEffect(() => {

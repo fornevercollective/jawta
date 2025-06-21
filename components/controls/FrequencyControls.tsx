@@ -4,6 +4,10 @@ import { Button } from "../ui/button";
 import { Radio, Satellite, Smartphone, Wifi, RefreshCw, BarChart2 } from "lucide-react";
 
 interface FrequencyControlsProps {
+  frequency?: number;
+  onFrequencyChange?: (newFreq: number) => void;
+  min?: number;
+  max?: number;
   activeBand?: string;
   onBandChange?: (band: string) => void;
   className?: string;
@@ -22,6 +26,10 @@ const bandGradients = {
 };
 
 export function FrequencyControls({
+  frequency,
+  onFrequencyChange,
+  min,
+  max,
   activeBand = "HF",
   onBandChange = () => {},
   className = ""

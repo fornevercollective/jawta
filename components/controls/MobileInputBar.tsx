@@ -375,8 +375,8 @@ export function MobileInputBar({
       {/* Status Toast */}
       <StatusToast
         message={toastMessage}
-        show={showToast}
-        onDismiss={handleDismissToast}
+        visible={showToast}
+        onClose={handleDismissToast}
       />
     </div>
   );

@@ -43,7 +43,8 @@ import {
   User,
   Music,
   Podcast,
-  ArrowUpRight
+  ArrowUpRight,
+  Terminal
 } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { SoundWaveLogo } from '../ui/sound-wave-logo';
@@ -59,6 +60,7 @@ const navGradients = {
   radio: 'bg-gradient-to-r from-purple-600/20 to-violet-600/20',
   tools: 'bg-gradient-to-r from-indigo-600/20 to-blue-600/20',
   morse: 'bg-gradient-to-r from-yellow-600/20 to-amber-600/20',
+  terminal: 'bg-gradient-to-r from-gray-600/20 to-slate-600/20',
   walkietalkie: 'bg-gradient-to-r from-red-600/20 to-orange-600/20'
 };
 
@@ -283,6 +285,21 @@ export function QuickAccessPanel({
               >
                 <Code className="h-5 w-5" />
                 <span>Text & Morse</span>
+              </Button>
+              
+              <Button
+                variant={activeTab === 'terminal' ? "default" : "ghost"}
+                size="lg"
+                onClick={() => {
+                  handleTabClick('terminal');
+                  setNavActive('terminal');
+                }}
+                className={`w-full justify-start gap-3 rounded-lg h-12 ${
+                  activeTab === 'terminal' ? 'bg-gradient-to-r from-gray-600 to-slate-600 border-white/30' : buttonHoverStyle
+                } ${activeNav === 'terminal' ? `${navGradients.terminal} midi-activate` : ''}`}
+              >
+                <Terminal className="h-5 w-5" />
+                <span>System Terminal</span>
               </Button>
             </div>
             
@@ -514,6 +531,21 @@ export function QuickAccessPanel({
               >
                 <Code className="h-5 w-5" />
                 <span>Text & Morse</span>
+              </Button>
+              
+              <Button
+                variant={activeTab === 'terminal' ? "default" : "ghost"}
+                size="lg"
+                onClick={() => {
+                  handleTabClick('terminal');
+                  setNavActive('terminal');
+                }}
+                className={`w-full justify-start gap-3 rounded-lg h-12 min-h-[80px] ${
+                  activeTab === 'terminal' ? 'bg-gradient-to-r from-gray-600 to-slate-600 border-white/30' : buttonHoverStyle
+                } ${activeNav === 'terminal' ? `${navGradients.terminal} midi-activate` : ''}`}
+              >
+                <Terminal className="h-5 w-5" />
+                <span>System Terminal</span>
               </Button>
             </div>
             

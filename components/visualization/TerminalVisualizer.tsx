@@ -5,6 +5,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
 interface TerminalVisualizerProps {
+  terminalOutput?: string[];
+  height?: string;
   isActive?: boolean;
   feedName?: string;
   className?: string;
@@ -13,17 +15,28 @@ interface TerminalVisualizerProps {
 }
 
 export function TerminalVisualizer({
+  terminalOutput: terminalOutputProp,
+  height,
   isActive = true,
   feedName = "System Terminal",
   className = "",
   initialData = [],
   onCommand
 }: TerminalVisualizerProps) {
-  const [terminalOutput, setTerminalOutput] = useState<string[]>(initialData.length > 0 ? initialData : [
+  const [terminalOutput, setTerminalOutput] = useState<string[]>(
+    terminalOutputProp && terminalOutputProp.length > 0 ? terminalOutputProp :
+    initialData.length > 0 ? initialData : [
     '[08:42:15] Terminal session started',
     '[08:42:16] System initialized',
     '[08:42:17] Type "help" for available commands'
   ]);
+  
+  // Update output when terminalOutputProp changes
+  useEffect(() => {
+    if (terminalOutputProp && terminalOutputProp.length > 0) {
+      setTerminalOutput(terminalOutputProp);
+    }
+  }, [terminalOutputProp]);
   
   const [command, setCommand] = useState('');
   const terminalRef = useRef<HTMLDivElement>(null);

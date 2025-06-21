@@ -5,6 +5,11 @@ import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface WaveformVisualizerProps {
+  data?: number[];
+  height?: number;
+  width?: number;
+  barWidth?: number;
+  barGap?: number;
   isActive?: boolean;
   volume?: number;
   className?: string;
@@ -18,6 +23,11 @@ type Device = {
 };
 
 export function WaveformVisualizer({
+  data,
+  height: heightProp,
+  width: widthProp,
+  barWidth,
+  barGap,
   isActive = false,
   volume = 75,
   className = ""

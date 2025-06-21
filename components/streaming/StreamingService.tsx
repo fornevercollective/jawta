@@ -268,8 +268,16 @@ export function StreamingService() {
           />
         );
       case 'music':
+        const musicProviders = [
+          { id: 'spotify', name: 'Spotify', color: '#1DB954', url: 'https://spotify.com', popular: true },
+          { id: 'apple', name: 'Apple Music', color: '#FA243C', url: 'https://music.apple.com', popular: true },
+          { id: 'youtube', name: 'YouTube Music', color: '#FF0000', url: 'https://music.youtube.com', popular: true },
+          { id: 'amazon', name: 'Amazon Music', color: '#00A8E1', url: 'https://music.amazon.com', popular: false },
+          { id: 'tidal', name: 'Tidal', color: '#000000', url: 'https://tidal.com', popular: false },
+        ];
         return (
           <MusicStreaming 
+            providers={musicProviders}
             onSelectProvider={(provider) => {
               // In a real app, this would connect to the streaming service
               console.log(`Connect to ${provider.name}`);

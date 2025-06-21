@@ -34,28 +34,28 @@ const deviceProfiles = [
     id: "flipper_zero", 
     name: "Flipper Zero", 
     capabilities: ["subghz", "nfc", "rfid", "infrared", "gpio"],
-    thumbnail: "🐬",
+    thumbnail: "&#x1F42C;",
     description: "Multi-tool for pentesters and hardware security researchers"
   },
   { 
     id: "proxmark3", 
     name: "Proxmark3", 
     capabilities: ["nfc", "rfid", "13.56mhz", "125khz"],
-    thumbnail: "📟",
+    thumbnail: "&#x1F4DF;",
     description: "Advanced RFID/NFC research and cloning device"
   },
   { 
     id: "hackrf_one", 
     name: "HackRF One", 
     capabilities: ["sdr", "subghz", "10mhz-6ghz"],
-    thumbnail: "📻",
+    thumbnail: "&#x1F4FB;",
     description: "Software defined radio peripheral"
   },
   { 
     id: "yardstick_one", 
     name: "Yardstick One", 
     capabilities: ["subghz", "433mhz", "868mhz", "915mhz"],
-    thumbnail: "📡",
+    thumbnail: "&#x1F4E1;",
     description: "Sub-1 GHz wireless development platform"
   }
 ];
@@ -97,7 +97,13 @@ const savedDevices = [
   { id: "remote_1", name: "TV Remote", type: "infrared", protocol: "NEC", code: "20DF10EF" }
 ];
 
-export function RFDeviceEmulator() {
+interface RFDeviceEmulatorProps {
+  deviceType?: string;
+  supportedBands?: string[];
+  volume?: number;
+}
+
+export function RFDeviceEmulator({ deviceType, supportedBands, volume }: RFDeviceEmulatorProps) {
   // State for device settings
   const [selectedDevice, setSelectedDevice] = useState(deviceProfiles[0].id);
   const [activeProtocol, setActiveProtocol] = useState<RFProtocol>("subghz");

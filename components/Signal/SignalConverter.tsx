@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { OpticalCommunicationPanel } from './OpticalCommunicationPanel';
 import { TextSignalConverterPanel } from './TextSignalConverterPanel';
+import { SystemTerminalPanel } from './SystemTerminalPanel';
 // Import additional components as needed
 
 interface SignalConverterProps {
@@ -30,6 +31,8 @@ export function SignalConverter({
       case 'morse':
       case 'text':
         return <TextSignalConverterPanel onEmergency={onEmergency} />;
+      case 'terminal':
+        return <SystemTerminalPanel onEmergency={onEmergency} />;
       // Add additional cases for other tabs
       default:
         return (

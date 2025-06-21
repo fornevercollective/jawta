@@ -18,6 +18,7 @@ import {
   Clock, 
   Download, 
   Bookmark, 
+  Volume2, 
   Share2, 
   Search, 
   Plus,
@@ -555,7 +556,7 @@ export function StreamingControlCenterPage({ onBack }: StreamingControlCenterPag
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Category Tabs */}
         <div className="border-b border-border/30 bg-black/30">
-          <ScrollArea orientation="horizontal" className="px-4">
+          <ScrollArea className="px-4">
             <div className="flex space-x-1 py-2">
               {categories.map((category) => {
                 const IconComponent = category.icon;

@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { Play, Pause, WaveformIcon } from "lucide-react";
+import { Play, Pause, Activity } from "lucide-react";
 
 interface TestSignalControlsProps {
   isTransmitting?: boolean;

@@ -37,7 +37,13 @@ interface BinarySequence {
   length: number;
 }
 
-export function DeviceProtocolAnalyzer() {
+interface DeviceProtocolAnalyzerProps {
+  deviceType?: string;
+  features?: string[];
+  volume?: number;
+}
+
+export function DeviceProtocolAnalyzer({ deviceType, features, volume }: DeviceProtocolAnalyzerProps) {
   // State for captured signal data
   const [rawSignalData, setRawSignalData] = useState<SignalData[]>([]);
   const [binarySequence, setBinarySequence] = useState<BinarySequence | null>(null);

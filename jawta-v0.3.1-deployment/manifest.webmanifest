@@ -1,0 +1,35 @@
+
+{
+  "name": "Jawta Signal Intelligence",
+  "short_name": "Jawta Signal",
+  "description": "Advanced signal processing and analysis application",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "transparent",
+  "theme_color": "transparent",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "platform_specific": {
+    "visionos": {
+      "environment": "immersive",
+      "enable_translucency": true,
+      "supports_multiple_windows": true
+    }
+  }
+}

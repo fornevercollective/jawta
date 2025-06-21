@@ -2,8 +2,8 @@
 "use client";
 
 import * as React from "react";
-import * as SheetPrimitive from "@radix-ui/react-dialog@1.1.6";
-import { XIcon } from "lucide-react@0.487.0";
+import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
@@ -11,7 +11,7 @@ const Sheet = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root>
 >(({ ...props }, ref) => (
-  <SheetPrimitive.Root data-slot="sheet" {...props} ref={ref} />
+  <SheetPrimitive.Root data-slot="sheet" {...props} />
 ));
 Sheet.displayName = "Sheet";
 
@@ -35,7 +35,7 @@ const SheetPortal = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Portal>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Portal>
 >(({ ...props }, ref) => (
-  <SheetPrimitive.Portal data-slot="sheet-portal" {...props} ref={ref} />
+  <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
 ));
 SheetPortal.displayName = "SheetPortal";
 

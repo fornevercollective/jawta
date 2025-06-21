@@ -114,10 +114,10 @@ export function RelayChatSystem({
     const templates = responseTemplates[band as keyof typeof responseTemplates] || responseTemplates.HF;
     
     // Pick a random template
-    let template = templates[Math.floor(Math.random() * templates.length)];
+    const template = templates[Math.floor(Math.random() * templates.length)];
     
     // Extract any callsign from the input message (basic pattern match)
-    const callsignMatch = inputMessage.match(/DE\s+([A-Z0-9\/]+)/i);
+    const callsignMatch = inputMessage.match(/DE\s+([A-Z0-9/]+)/i);
     const userCallsign = callsignMatch ? callsignMatch[1] : "JAWTA";
     
     // Pick a random responding callsign

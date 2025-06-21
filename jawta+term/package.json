@@ -1,0 +1,128 @@
+{
+  "name": "jawta-term",
+  "version": "0.3.0",
+  "description": "JAWTA Terminal - Advanced Signal Processing CLI with Figma-inspired Design",
+  "type": "module",
+  "main": "scripts/terminal.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jawta/signal-processing.git",
+    "directory": "jawta+term"
+  },
+  "keywords": [
+    "terminal",
+    "cli",
+    "signal-processing",
+    "jawta",
+    "figma-design",
+    "web-terminal",
+    "xterm",
+    "command-line"
+  ],
+  "author": "JAWTA Signal Processing Team",
+  "license": "MIT",
+  "homepage": "https://jawta-signal.github.io/terminal.html",
+  "dependencies": {
+    "xterm": "^5.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "eslint": "^8.57.0",
+    "prettier": "^3.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "http-server . -p 8080",
+    "lint": "eslint scripts/ --ext .js,.ts",
+    "format": "prettier --write scripts/ styles/",
+    "test": "echo \"Terminal functionality tests would go here\"",
+    "deploy": "echo \"Deploy to jawta-signal.github.io\""
+  },
+  "files": [
+    "scripts/",
+    "styles/",
+    "assets/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "figma": {
+    "designSystem": {
+      "colors": {
+        "primary": "#06b6d4",
+        "secondary": "#8b5cf6",
+        "accent": "#f59e0b",
+        "background": "#000000",
+        "surface": "#0f0f0f",
+        "card": "#1a1a1a"
+      },
+      "typography": {
+        "fontFamily": {
+          "mono": ["JetBrains Mono", "Source Code Pro", "Consolas", "Monaco", "monospace"],
+          "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"]
+        }
+      },
+      "spacing": {
+        "xs": "0.25rem",
+        "sm": "0.5rem",
+        "md": "1rem",
+        "lg": "1.5rem",
+        "xl": "2rem"
+      },
+      "borderRadius": {
+        "sm": "4px",
+        "md": "8px",
+        "lg": "12px",
+        "xl": "16px"
+      }
+    },
+    "components": {
+      "terminal": {
+        "description": "Modern terminal interface with glass morphism effects",
+        "variants": ["default", "compact", "fullscreen"]
+      },
+      "commandPalette": {
+        "description": "Command palette for quick actions",
+        "shortcut": "⌘K / Ctrl+K"
+      },
+      "statusIndicator": {
+        "description": "System status indicators with animated dots",
+        "states": ["online", "offline", "warning", "error"]
+      }
+    }
+  },
+  "terminal": {
+    "theme": {
+      "background": "#0f0f0f",
+      "foreground": "#ffffff",
+      "cursor": "#06b6d4",
+      "selection": "rgba(6, 182, 212, 0.3)"
+    },
+    "features": {
+      "commandHistory": true,
+      "autoComplete": true,
+      "syntaxHighlighting": true,
+      "quickCommands": true,
+      "systemMonitoring": true
+    },
+    "commands": {
+      "jawta": {
+        "description": "Main JAWTA command-line interface",
+        "subcommands": [
+          "text",
+          "crypto",
+          "signal",
+          "help",
+          "version",
+          "status"
+        ]
+      }
+    }
+  }
+}

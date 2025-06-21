@@ -135,7 +135,7 @@ export const qwertyToNumberpad = (text: string, phoneModel: string = 'generic'):
   return text.toUpperCase().split('')
     .map(char => {
       // Add a | to separate sequences of the same key
-      let result = T9_KEYMAP[char] || char;
+      const result = T9_KEYMAP[char] || char;
       return result;
     })
     .join(' ');
@@ -219,15 +219,15 @@ export const convertToWingdings = (text: string): string => {
     // In reality this would use a proper mapping to Wingdings
     const charCode = char.charCodeAt(0);
     if (char >= 'A' && char <= 'Z') {
-      return `✉️`;  // Example: Letters become mail symbol
+      return `&#x2709;&#xFE0F;`;  // Example: Letters become mail symbol
     } else if (char >= 'a' && char <= 'z') {
-      return `📌`;  // Example: Lowercase letters become push pin 
+      return `&#x1F4CC;`;  // Example: Lowercase letters become push pin
     } else if (char >= '0' && char <= '9') {
-      return `🔢`;  // Example: Numbers become 1234 symbol
+      return `&#x1F522;`;  // Example: Numbers become 1234 symbol
     } else if (char === ' ') {
       return ' ';
     } else {
-      return `🔣`;  // Other characters
+      return `&#x1F523;`;  // Other characters
     }
   }).join('');
 };
