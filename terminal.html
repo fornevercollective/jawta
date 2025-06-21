@@ -228,35 +228,43 @@
                         <div class="terminal-dot dot-green"></div>
                         <div class="flex items-center gap-2 ml-4">
                             <img src="public/assets/jawta-cbw-28x28.png" alt="JAWTA" class="w-4 h-4">
-                            <span class="text-sm text-gray-400">jawta-terminal — Signal Processing & Intelligence CLI</span>
+                            <span class="text-sm text-gray-400">jawta@terminal — Signal Processing CLI</span>
+                        </div>
+                        <div class="ml-auto flex items-center space-x-2">
+                            <button onclick="clearHeroTerminal()" class="text-xs text-gray-400 hover:text-white transition-colors">Clear</button>
+                            <button onclick="copyHeroTerminalOutput()" class="text-xs text-gray-400 hover:text-white transition-colors">Copy</button>
+                            <button onclick="resetHeroDemo()" class="text-xs text-gray-400 hover:text-white transition-colors">Reset</button>
                         </div>
                     </div>
-                    <div class="terminal-content">
+                    <div class="terminal-content" id="hero-terminal-content">
                         <div class="command-line">
                             <span class="prompt">jawta@terminal:~$</span>
-                            <span class="command">jawta text morse "SOS EMERGENCY"</span>
+                            <span class="command">jawta --help</span>
                         </div>
-                        <div class="output success">... --- ... / . -- . .-. --. . -. -.-. -.--</div>
+                        <div class="output info">JAWTA Terminal v0.3.0 - Signal Processing CLI
 
+Usage: jawta [command] [options]
+
+Commands:
+  text        Text processing utilities (morse, t9, ascii, unicode)
+  crypto      Encryption and decryption tools
+  signal      Signal analysis and generation
+  stego       Steganography utilities
+  translate   Custom language translation
+  batch       Batch processing
+  interactive Start interactive mode
+  system      System diagnostics and info
+  rf          RF analysis and monitoring
+
+Examples:
+  jawta text morse "HELLO"          Convert text to Morse code
+  jawta crypto encrypt "secret"     Encrypt data with various methods
+  jawta signal generate --type sine Generate test signals
+
+Type 'jawta [command] --help' for detailed information.</div>
                         <div class="command-line">
                             <span class="prompt">jawta@terminal:~$</span>
-                            <span class="command">jawta crypto encrypt "classified data" -m base64</span>
-                        </div>
-                        <div class="output">Y2xhc3NpZmllZCBkYXRh</div>
-
-                        <div class="command-line">
-                            <span class="prompt">jawta@terminal:~$</span>
-                            <span class="command">jawta signal analyze --type rf --output signal_report.json</span>
-                        </div>
-                        <div class="output info">Analyzing RF signal data...
-Signal Strength: 87%
-Frequency: 2437.5 MHz
-Quality: Excellent
-✓ Report saved to signal_report.json</div>
-
-                        <div class="command-line">
-                            <span class="prompt">jawta@terminal:~$</span>
-                            <span class="command typing-animation" id="typing-command"></span>
+                            <input type="text" id="hero-terminal-input" class="command bg-transparent border-none outline-none text-white flex-1" placeholder="Type a command... (Try: jawta text morse \"HELLO\")" onkeydown="handleHeroTerminalInput(event)" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -648,6 +656,177 @@ Type 'jawta [command] --help' for detailed information.</div>
             }, 600);
         }
 
+        // Hero Terminal Functions
+        let heroCommandHistory = [];
+        let heroHistoryIndex = -1;
+
+        function handleHeroTerminalInput(event) {
+            const input = event.target;
+            const command = input.value.trim();
+            
+            if (event.key === 'Enter') {
+                if (command) {
+                    heroCommandHistory.unshift(command);
+                    if (heroCommandHistory.length > 50) heroCommandHistory.pop();
+                    heroHistoryIndex = -1;
+                    
+                    runHeroCommand(command);
+                    input.value = '';
+                }
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (heroHistoryIndex < heroCommandHistory.length - 1) {
+                    heroHistoryIndex++;
+                    input.value = heroCommandHistory[heroHistoryIndex] || '';
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (heroHistoryIndex > 0) {
+                    heroHistoryIndex--;
+                    input.value = heroCommandHistory[heroHistoryIndex] || '';
+                } else if (heroHistoryIndex === 0) {
+                    heroHistoryIndex = -1;
+                    input.value = '';
+                }
+            } else if (event.key === 'Tab') {
+                event.preventDefault();
+                const availableCommands = Object.keys(terminalCommands);
+                const matches = availableCommands.filter(cmd => cmd.startsWith(command));
+                if (matches.length === 1) {
+                    input.value = matches[0];
+                }
+            }
+        }
+
+        function runHeroCommand(command) {
+            const terminal = document.getElementById('hero-terminal-content');
+            
+            const commandLine = document.createElement('div');
+            commandLine.className = 'command-line animate-fade-in-up';
+            commandLine.innerHTML = `
+                <span class="prompt">jawta@terminal:~$</span>
+                <span class="command">${escapeHtml(command)}</span>
+            `;
+            
+            const inputLine = terminal.lastElementChild;
+            if (inputLine) terminal.removeChild(inputLine);
+            
+            terminal.appendChild(commandLine);
+            
+            const cmdData = terminalCommands[command];
+            if (cmdData) {
+                if (cmdData.type === 'clear') {
+                    clearHeroTerminal();
+                    return;
+                }
+                
+                const output = document.createElement('div');
+                output.className = `output ${cmdData.type}`;
+                output.innerHTML = formatOutput(cmdData.output);
+                output.style.animation = 'fadeInUp 0.3s ease-out';
+                terminal.appendChild(output);
+            } else {
+                const output = document.createElement('div');
+                output.className = 'output error';
+                const baseCommand = command.split(' ')[0];
+                output.innerHTML = `
+                    <span style="color: #ff6b6b;">❌ jawta: command not found: ${escapeHtml(baseCommand)}</span>
+                    <div style="margin-top: 8px; color: #fbbf24; font-size: 0.9em;">
+                        💡 Try: <code style="background: rgba(251, 191, 36, 0.2); padding: 2px 6px; border-radius: 3px;">jawta --help</code> for available commands
+                    </div>
+                `;
+                output.style.animation = 'fadeInUp 0.3s ease-out';
+                terminal.appendChild(output);
+            }
+            
+            if (inputLine) terminal.appendChild(inputLine);
+            
+            setTimeout(() => {
+                terminal.scrollTo({
+                    top: terminal.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+
+        function clearHeroTerminal() {
+            const terminal = document.getElementById('hero-terminal-content');
+            terminal.innerHTML = `
+                <div class="command-line animate-fade-in-up">
+                    <span class="prompt">jawta@terminal:~$</span>
+                    <input type="text" id="hero-terminal-input" class="command bg-transparent border-none outline-none text-white flex-1" placeholder="Type a command... (Try: jawta text morse \\"HELLO\\")" onkeydown="handleHeroTerminalInput(event)" autocomplete="off">
+                </div>
+            `;
+            setTimeout(() => {
+                const input = document.getElementById('hero-terminal-input');
+                if (input) input.focus();
+            }, 100);
+        }
+
+        function copyHeroTerminalOutput() {
+            const terminal = document.getElementById('hero-terminal-content');
+            const text = terminal.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = event.target;
+                const originalText = copyBtn.textContent;
+                const originalClass = copyBtn.className;
+                
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.className = originalClass + ' text-green-400';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.className = originalClass;
+                }, 1500);
+            }).catch(() => {
+                const copyBtn = event.target;
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '❌ Failed';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1500);
+            });
+        }
+
+        function resetHeroDemo() {
+            const terminal = document.getElementById('hero-terminal-content');
+            terminal.innerHTML = `
+                <div class="command-line animate-fade-in-up">
+                    <span class="prompt">jawta@terminal:~$</span>
+                    <span class="command">jawta --help</span>
+                </div>
+                <div class="output info animate-fade-in-up" style="animation-delay: 0.2s;">JAWTA Terminal v0.3.0 - Signal Processing CLI
+
+Usage: jawta [command] [options]
+
+Commands:
+  text        Text processing utilities (morse, t9, ascii, unicode)
+  crypto      Encryption and decryption tools
+  signal      Signal analysis and generation
+  stego       Steganography utilities
+  translate   Custom language translation
+  batch       Batch processing
+  interactive Start interactive mode
+  system      System diagnostics and info
+  rf          RF analysis and monitoring
+
+Examples:
+  jawta text morse "HELLO"          Convert text to Morse code
+  jawta crypto encrypt "secret"     Encrypt data with various methods
+  jawta signal generate --type sine Generate test signals
+
+Type 'jawta [command] --help' for detailed information.</div>
+                <div class="command-line animate-fade-in-up" style="animation-delay: 0.4s;">
+                    <span class="prompt">jawta@terminal:~$</span>
+                    <input type="text" id="hero-terminal-input" class="command bg-transparent border-none outline-none text-white flex-1" placeholder="Type a command... (Try: jawta text morse \\"HELLO\\")" onkeydown="handleHeroTerminalInput(event)" autocomplete="off">
+                </div>
+            `;
+            setTimeout(() => {
+                const input = document.getElementById('hero-terminal-input');
+                if (input) input.focus();
+            }, 600);
+        }
+
         // Typing animation for hero terminal
         const typingCommands = [
             'jawta interactive',
@@ -679,14 +858,22 @@ Type 'jawta [command] --help' for detailed information.</div>
             }
         }
         
-        // Auto-focus on terminal input when page loads
+        // Auto-focus on terminal inputs when page loads
         window.addEventListener('load', function() {
             setTimeout(() => {
+                // Focus on hero terminal first
+                const heroTerminalInput = document.getElementById('hero-terminal-input');
+                if (heroTerminalInput) {
+                    heroTerminalInput.focus();
+                }
+                
+                // Also ensure the interactive terminal is ready
                 const terminalInput = document.getElementById('terminal-input');
                 if (terminalInput) {
-                    terminalInput.focus();
+                    // Hero terminal takes priority, but interactive terminal should be ready
+                    terminalInput.setAttribute('tabindex', '2');
                 }
-            }, 1000);
+            }, 500);
             
             // Start typing animation
             setTimeout(typeCommand, 2000);
