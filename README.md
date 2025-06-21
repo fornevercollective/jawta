@@ -1,6 +1,6 @@
 <img width="440" alt="jawta-term" src="https://github.com/user-attachments/assets/80663797-a268-473d-90ac-35a0a31ccb5d" />
 <img width="824" alt="jawta-term1" src="https://github.com/user-attachments/assets/d067a092-cabf-41ff-acee-608d8a3ab2c0" />
-
+LIVE - http://fornevercollective.github.io/jawta/terminal.html DEMO
 #
 LIVE - http://fornevercollective.github.io/jawta/index.html DEMO
 # jawta
