@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAWTA Terminal - Signal Processing CLI</title>
+    
+    <!-- Favicon with JAWTA branding -->
+    <link rel="icon" type="image/png" href="public/assets/jawta-favicon-256px.png">
+    <link rel="apple-touch-icon" href="public/assets/jawta-favicon-256px.png">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="JAWTA Terminal - Advanced command-line interface for signal processing, text conversion, and RF communication analysis with modern Figma-inspired design.">
+    <meta name="keywords" content="CLI, terminal, signal processing, jawta+term, Morse code, encryption, RF analysis, command line">
+    <meta name="author" content="JAWTA Signal Processing Team">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fornevercollective.github.io/jawta/terminal.html">
+    <meta property="og:title" content="JAWTA Terminal - Modern Signal Processing CLI">
+    <meta property="og:description" content="Advanced terminal interface with Figma-inspired design for signal processing professionals and enthusiasts.">
+    <meta property="og:image" content="public/assets/jawta-banner.png">
+    
+    <!-- Tailwind CSS with custom config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'jawta': {
+                            'bg': '#000000',
+                            'surface': '#0a0a0a',
+                            'card': '#121212',
+                            'border': 'rgba(255, 255, 255, 0.1)',
+                            'primary': '#06b6d4',
+                            'secondary': '#7c3aed',
+                            'accent': '#f59e0b',
+                            'success': '#10b981',
+                            'warning': '#f59e0b',
+                            'danger': '#ef4444'
+                        }
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'Source Code Pro', 'Consolas', 'Monaco', 'monospace']
+                    },
+                    animation: {
+                        'pulse-subtle': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'typing': 'typing 1s steps(40, end), blink-caret 0.75s step-end infinite'
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(6, 182, 212, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(6, 182, 212, 0.8)' }
+                        },
+                        typing: {
+                            '0%': { width: '0' },
+                            '100%': { width: '100%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Terminal.js -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    
+    <!-- Custom Figma-inspired CSS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --jawta-bg: #000000;
+            --jawta-surface: #0f0f0f;
+            --jawta-card: #1a1a1a;
+            --jawta-border: rgba(255, 255, 255, 0.08);
+            --jawta-text: #ffffff;
+            --jawta-text-muted: rgba(255, 255, 255, 0.7);
+            --jawta-primary: #06b6d4;
+            --jawta-secondary: #8b5cf6;
+            --jawta-accent: #f59e0b;
+            --jawta-success: #10b981;
+            --jawta-danger: #ef4444;
+            --jawta-shadow: rgba(0, 0, 0, 0.5);
+            --jawta-gradient: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--jawta-bg);
+            color: var(--jawta-text);
+            overflow-x: hidden;
+        }
+        
+        /* Figma-inspired design elements */
+        .figma-card {
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 
+                0 4px 24px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .figma-button {
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: var(--jawta-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .figma-button:hover {
+            background: var(--jawta-card);
+            border-color: var(--jawta-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+        }
+        
+        .figma-button-primary {
+            background: var(--jawta-gradient);
+            border: none;
+            color: white;
+        }
+        
+        .figma-button-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3);
+        }
+        
+        .terminal-container {
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .terminal-header {
+            background: var(--jawta-card);
+            border-bottom: 1px solid var(--jawta-border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .terminal-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .terminal-control.close { background: #ff5f57; }
+        .terminal-control.minimize { background: #ffbd2e; }
+        .terminal-control.maximize { background: #28ca42; }
+        
+        .terminal-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--jawta-success);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--jawta-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Grid layout for desktop */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+        
+        .sidebar-panel {
+            background: var(--jawta-surface);
+            border-right: 1px solid var(--jawta-border);
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .main-panel {
+            background: var(--jawta-bg);
+            padding: 24px;
+            overflow: hidden;
+        }
+        
+        .header-panel {
+            grid-column: 1 / -1;
+            background: var(--jawta-surface);
+            border-bottom: 1px solid var(--jawta-border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Command palette */
+        .command-palette {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            width: 90%;
+            max-width: 600px;
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            border-radius: 16px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+        }
+        
+        .command-palette.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+            }
+            
+            .sidebar-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--jawta-border);
+                padding: 16px;
+            }
+            
+            .main-panel {
+                padding: 16px;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--jawta-surface);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--jawta-border);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Terminal specific styles */
+        .xterm {
+            font-family: 'JetBrains Mono', 'Source Code Pro', monospace !important;
+            padding: 16px;
+        }
+        
+        .xterm-viewport {
+            background: transparent !important;
+        }
+        
+        .xterm-screen {
+            background: transparent !important;
+        }
+        
+        .xterm-cursor {
+            background: var(--jawta-primary) !important;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Loading states */
+        .skeleton {
+            background: linear-gradient(90deg, var(--jawta-surface) 25%, var(--jawta-card) 50%, var(--jawta-surface) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Additional CSS variables */
+        :root {
+            --jawta-success: #22c55e;
+            --jawta-warning: #eab308;
+            --jawta-error: #ef4444;
+            --terminal-green: #00ff41;
+            --terminal-cyan: #00ffff;
+            --terminal-yellow: #ffff00;
+            --terminal-red: #ff6b6b;
+        }
+        
+        body {
+            background: var(--jawta-bg);
+            color: var(--jawta-text);
+            font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
+            line-height: 1.6;
+        }
+        
+        .terminal-bg {
+            background: var(--jawta-surface);
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .jawta-card {
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            transition: all 0.3s ease;
+        }
+        
+        .jawta-card:hover {
+            border-color: var(--jawta-primary);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+        }
+        
+        .terminal-window {
+            background: var(--jawta-surface);
+            border: 2px solid var(--jawta-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+        
+        .terminal-header {
+            background: var(--jawta-card);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--jawta-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f57; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #28ca42; }
+         /* Enhanced terminal styles with waveform and network visualization support */
+        .terminal-content {
+            background: var(--jawta-surface);
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .terminal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal-content::-webkit-scrollbar-track {
+            background: var(--jawta-card);
+            border-radius: 4px;
+        }
+
+        .terminal-content::-webkit-scrollbar-thumb {
+            background: var(--jawta-primary);
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .terminal-content::-webkit-scrollbar-thumb:hover {
+            background: #0891b2;
+        }
+
+        .command-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .command-line:hover {
+            background: rgba(6, 182, 212, 0.05);
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: 6px -4px;
+        }
+
+        .prompt {
+            color: var(--terminal-green);
+            margin-right: 8px;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        .command {
+            color: var(--jawta-text);
+            flex: 1;
+        }
+
+        .command input {
+            width: 100%;
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .command input:focus {
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3);
+            border-radius: 2px;
+        }
+
+        .output {
+            color: var(--terminal-cyan);
+            margin-left: 20px;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            border-left: 3px solid transparent;
+            padding-left: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .output:hover {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            padding: 4px 12px;
+            margin: 8px 8px 8px 20px;
+        }
+
+        .output.error {
+            color: var(--terminal-red);
+            border-left-color: var(--terminal-red);
+            background: rgba(255, 107, 107, 0.05);
+        }
+
+        .output.success {
+            color: var(--terminal-green);
+            border-left-color: var(--terminal-green);
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .output.info {
+            color: var(--terminal-cyan);
+            border-left-color: var(--terminal-cyan);
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .output.warning {
+            color: var(--terminal-yellow);
+            border-left-color: var(--terminal-yellow);
+            background: rgba(255, 255, 0, 0.05);
+        }
+
+        /* Signal Waveform Visualization */
+        .waveform-container {
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .waveform-canvas {
+            width: 100%;
+            height: 120px;
+            background: #000;
+            border-radius: 4px;
+            display: block;
+        }
+
+        .waveform-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .waveform-param {
+            color: var(--jawta-text-muted);
+        }
+
+        .waveform-param .value {
+            color: var(--jawta-primary);
+            font-weight: 600;
+        }
+
+        /* Syntax Highlighting for Signal Notation */
+        .signal-notation {
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+
+        .signal-notation .function {
+            color: #7dd3fc;
+        }
+
+        .signal-notation .method {
+            color: #fbbf24;
+        }
+
+        .signal-notation .number {
+            color: #34d399;
+        }
+
+        .signal-notation .operator {
+            color: #f472b6;
+        }
+
+        .signal-notation .bracket {
+            color: #a78bfa;
+        }
+
+        /* Network Trace Visualization */
+        .trace-container {
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .trace-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--jawta-border);
+        }
+
+        .trace-hop {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .trace-hop:last-child {
+            border-bottom: none;
+        }
+
+        .hop-number {
+            width: 30px;
+            color: var(--jawta-text-muted);
+            font-size: 12px;
+        }
+
+        .hop-ip {
+            flex: 1;
+            color: var(--jawta-primary);
+        }
+
+        .hop-hostname {
+            flex: 2;
+            color: var(--jawta-text);
+            font-size: 12px;
+        }
+
+        .hop-timing {
+            width: 80px;
+            text-align: right;
+            color: var(--terminal-green);
+            font-size: 12px;
+        }
+
+        .hop-flag {
+            width: 60px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .flag-success {
+            color: var(--terminal-green);
+        }
+
+        .flag-timeout {
+            color: var(--terminal-yellow);
+        }
+
+        .flag-error {
+            color: var(--terminal-red);
+        }
+
+        /* Network Status Indicators */
+        .network-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--terminal-green);
+        }
+
+        .status-degraded {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--terminal-yellow);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--terminal-red);
+        }
+
+        /* Spectrum Analyzer Styles */
+        .spectrum-container {
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .spectrum-display {
+            width: 100%;
+            height: 150px;
+            background: #000;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spectrum-bar {
+            position: absolute;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to top, #00ff41, #06b6d4, #7c3aed);
+            transition: height 0.2s ease;
+        }
+
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 10px;
+            color: var(--jawta-text-muted);
+        }
+        
+        .typing-animation {
+            border-right: 2px solid var(--terminal-green);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { border-color: var(--terminal-green); }
+            51%, 100% { border-color: transparent; }
+        }
+        
+        .install-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(6, 182, 212, 0.2);
+            border: 1px solid var(--jawta-border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--jawta-text);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .install-badge:hover {
+            background: rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        }
+        
+        .feature-card {
+            background: var(--jawta-card);
+            border: 1px solid var(--jawta-border);
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--jawta-primary);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.15);
+        }
+        
+        .command-showcase {
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        
+        .syntax-highlight .comment { color: #6a737d; }
+        .syntax-highlight .string { color: #22c55e; }
+        .syntax-highlight .number { color: #eab308; }
+        .syntax-highlight .keyword { color: #7c3aed; }
+        .syntax-highlight .operator { color: var(--jawta-primary); }
+        
+        .command-demo {
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            border-radius: 6px;
+            padding: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .command-demo:hover {
+            border-color: var(--jawta-primary);
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .command-demo code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--jawta-primary);
+            background: transparent;
+        }
+        
+        .hero-terminal {
+            min-height: 400px;
+            background: var(--jawta-surface);
+        }
+        
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .floating-element {
+            position: absolute;
+            color: var(--jawta-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); }
+            100% { transform: translateY(-100px) translateX(100px); }
+        }
+        
+        .cli-badge {
+            background: linear-gradient(90deg, #06b6d4, #7c3aed);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .status-online {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--terminal-green);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+        }
+        
+        .neon-glow-purple {
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+        }
+        
+        .file-tree {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            background: var(--jawta-surface);
+            border: 1px solid var(--jawta-border);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .file-tree .folder {
+            color: var(--terminal-cyan);
+            font-weight: 500;
+        }
+        
+        .file-tree .file {
+            color: var(--jawta-text);
+        }
+        
+        .file-tree .updated {
+            color: var(--terminal-green);
+            font-weight: 500;
+        }
+        
+        .file-tree .new {
+            color: var(--terminal-yellow);
+            font-weight: 500;
+        }
+        
+        .file-tree .modified {
+            color: var(--jawta-primary);
+            font-weight: 500;
+        }
+        
+        .changelog-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--jawta-border);
+        }
+        
+        .changelog-item:last-child {
+            border-bottom: none;
+        }
+        
+        .changelog-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+        
+        .changelog-icon.new {
+            background: var(--terminal-green);
+            color: black;
+        }
+        
+        .changelog-icon.updated {
+            background: var(--jawta-primary);
+            color: white;
+        }
+        
+        .changelog-icon.fixed {
+            background: var(--terminal-yellow);
+            color: black;
+        }
+        
+        @media (max-width: 640px) {
+            .terminal-content {
+                font-size: 12px;
+                padding: 16px;
+            }
+            
+            .feature-card {
+                padding: 16px;
+            }
+            
+            .file-tree {
+                font-size: 11px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-jawta-bg overflow-x-hidden">
+    <!-- Modern Dashboard Grid Layout -->
+    <div class="dashboard-grid">
+        <!-- Header Panel -->
+        <div class="header-panel">
+            <div class="flex items-center gap-4">
+                <!-- JAWTA Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <img src="public/assets/jawta-cgreen-28x28.png" alt="JAWTA Logo" class="w-8 h-8 object-contain">
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-semibold text-white flex items-center gap-2">
+                            JAWTA Terminal
+                            <img src="public/assets/jawta-sbw-t-28x28.png" alt="JAWTA" class="w-5 h-5 opacity-80">
+                        </h1>
+                        <p class="text-xs text-jawta-text-muted">Signal Processing CLI</p>
+                    </div>
+                </div>
+                
+                <!-- Status Indicator -->
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Online</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Version Badge -->
+                <div class="px-3 py-1 bg-jawta-card border border-jawta-border rounded-full text-xs font-medium text-jawta-text-muted">
+                    v0.3.0
+                </div>
+                
+                <!-- Command Palette Toggle -->
+                <button id="command-palette-btn" class="figma-button">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Command Palette
+                    <span class="ml-2 px-2 py-0.5 bg-jawta-surface text-xs rounded border border-jawta-border">⌘K</span>
+                </button>
+                
+                <!-- Launch Terminal -->
+                <button id="launch-terminal-btn" class="figma-button-primary">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3"/>
+                    </svg>
+                    Launch Terminal
+                </button>
+            </div>
+        </div>
+        
+        <!-- Sidebar Panel -->
+        <div class="sidebar-panel">
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="figma-card p-4">
+                    <h3 class="text-sm font-medium text-white mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button onclick="runQuickCommand('help')" class="w-full figma-button text-left">
+                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Show Help
+                        </button>
+                        <button onclick="runQuickCommand('version')" class="w-full figma-button text-left">
+                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                            Version Info
+                        </button>
+                        <button onclick="runQuickCommand('examples')" class="w-full figma-button text-left">
+                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            Examples
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Signal Processing Tools -->
+                <div class="figma-card p-4">
+                    <h3 class="text-sm font-medium text-white mb-3">Signal Processing</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Morse Code</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Text Conversion</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Encryption</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">RF Analysis</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Radio Scanner</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Signal Analytics</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Satellite Tracking</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Image Analysis</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Binary Analyzer</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">WiFi Analyzer</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">ASCII Live Stream</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Auto Tools</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Mobile Tools</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Performance Monitor</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Emergency Tools</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">File Scanner</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Code Tools</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Steganography</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-jawta-surface rounded-lg">
+                            <span class="text-jawta-text-muted">Network Trace</span>
+                            <span class="text-jawta-success font-mono text-xs">READY</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Commands -->
+                <div class="figma-card p-4">
+                    <h3 class="text-sm font-medium text-white mb-3">Recent Commands</h3>
+                    <div class="space-y-1 text-xs font-mono text-jawta-text-muted">
+                        <div class="p-2 bg-jawta-surface rounded border-l-2 border-jawta-primary">
+                            jawta text morse "HELLO"
+                        </div>
+                        <div class="p-2 bg-jawta-surface rounded border-l-2 border-jawta-secondary">
+                            jawta crypto encrypt "data"
+                        </div>
+                        <div class="p-2 bg-jawta-surface rounded border-l-2 border-jawta-accent">
+                            jawta signal analyze
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Status -->
+                <div class="figma-card p-4">
+                    <h3 class="text-sm font-medium text-white mb-3">System Status</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-jawta-text-muted">CPU Usage</span>
+                            <span class="text-xs text-jawta-success">12%</span>
+                        </div>
+                        <div class="w-full bg-jawta-surface rounded-full h-1">
+                            <div class="bg-jawta-success h-1 rounded-full" style="width: 12%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-jawta-text-muted">Memory</span>
+                            <span class="text-xs text-jawta-primary">256MB</span>
+                        </div>
+                        <div class="w-full bg-jawta-surface rounded-full h-1">
+                            <div class="bg-jawta-primary h-1 rounded-full" style="width: 35%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-jawta-text-muted">Network</span>
+                            <span class="text-xs text-jawta-success">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <div class="h-full flex flex-col">
+                <!-- JAWTA Banner Section -->
+                <div class="figma-card p-6 mb-6 animate-fade-in-up bg-gradient-to-r from-jawta-surface to-jawta-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-4">
+                            <img src="public/assets/jawta-banner.png" alt="JAWTA Banner" class="h-16 w-auto object-contain">
+                            <div>
+                                <h2 class="text-xl font-semibold text-white mb-2">JAWTA Terminal</h2>
+                                <p class="text-jawta-text-muted">Advanced signal processing and intelligence CLI interface</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <img src="public/assets/jawta-cbw-28x28.png" alt="JAWTA Icon" class="w-4 h-4">
+                                    <span class="text-xs text-jawta-primary font-mono">Signal Processing • RF Analysis • Cryptography</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center gap-2 mb-1">
+                                <img src="public/assets/jawta-sbw-28x28.png" alt="JAWTA" class="w-6 h-6">
+                                <div class="text-2xl font-bold text-white">v0.3.0</div>
+                            </div>
+                            <div class="text-xs text-jawta-text-muted">Stable Release</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature highlights with JAWTA branding -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        <div class="p-4 bg-jawta-surface rounded-lg border border-jawta-border hover:border-jawta-primary transition-colors">
+                            <div class="w-8 h-8 bg-jawta-primary rounded-lg flex items-center justify-center mb-3">
+                                <img src="public/assets/jawta-cbw-28x28.png" alt="Signal Processing" class="w-5 h-5">
+                            </div>
+                            <h3 class="font-medium text-white mb-1">Signal Processing</h3>
+                            <p class="text-xs text-jawta-text-muted">Morse code, RF analysis, and signal generation tools</p>
+                        </div>
+                        
+                        <div class="p-4 bg-jawta-surface rounded-lg border border-jawta-border hover:border-jawta-secondary transition-colors">
+                            <div class="w-8 h-8 bg-jawta-secondary rounded-lg flex items-center justify-center mb-3">
+                                <img src="public/assets/jawta-cgreen-28x28.png" alt="Encryption" class="w-5 h-5">
+                            </div>
+                            <h3 class="font-medium text-white mb-1">Encryption</h3>
+                            <p class="text-xs text-jawta-text-muted">Advanced encryption and decryption utilities</p>
+                        </div>
+                        
+                        <div class="p-4 bg-jawta-surface rounded-lg border border-jawta-border hover:border-jawta-accent transition-colors">
+                            <div class="w-8 h-8 bg-jawta-accent rounded-lg flex items-center justify-center mb-3">
+                                <img src="public/assets/jawta-sbw-t-28x28.png" alt="Communication" class="w-5 h-5">
+                            </div>
+                            <h3 class="font-medium text-white mb-1">Communication</h3>
+                            <p class="text-xs text-jawta-text-muted">Text conversion and communication protocols</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Terminal Container -->
+                <div class="flex-1 terminal-container animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="terminal-header">
+                        <div class="flex items-center gap-3">
+                            <div class="terminal-controls">
+                                <div class="terminal-control close"></div>
+                                <div class="terminal-control minimize"></div>
+                                <div class="terminal-control maximize"></div>
+                            </div>
+                            <img src="public/assets/jawta-sbw-28x28.png" alt="JAWTA" class="w-4 h-4 opacity-80">
+                            <span class="text-sm font-medium text-white">jawta@terminal</span>
+                            <span class="text-xs text-jawta-text-muted">• Signal Processing CLI</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            <div class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Connected</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="terminal" class="flex-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Command Palette -->
+    <div id="command-palette" class="command-palette">
+        <div class="p-4 border-b border-jawta-border">
+            <input 
+                type="text" 
+                id="command-input" 
+                placeholder="Type a command..." 
+                class="w-full bg-transparent text-white text-lg outline-none font-mono"
+                autocomplete="off"
+            />
+        </div>
+        <div class="p-4 max-h-64 overflow-y-auto">
+            <div class="space-y-1">
+                <button onclick="executeFromPalette('jawta help')" class="w-full text-left p-2 rounded hover:bg-jawta-surface transition-colors">
+                    <div class="font-mono text-sm text-jawta-primary">jawta help</div>
+                    <div class="text-xs text-jawta-text-muted">Show available commands</div>
+                </button>
+                <button onclick="executeFromPalette('jawta text morse HELLO')" class="w-full text-left p-2 rounded hover:bg-jawta-surface transition-colors">
+                    <div class="font-mono text-sm text-jawta-primary">jawta text morse "HELLO"</div>
+                    <div class="text-xs text-jawta-text-muted">Convert text to Morse code</div>
+                </button>
+                <button onclick="executeFromPalette('jawta crypto encrypt test')" class="w-full text-left p-2 rounded hover:bg-jawta-surface transition-colors">
+                    <div class="font-mono text-sm text-jawta-primary">jawta crypto encrypt "test"</div>
+                    <div class="text-xs text-jawta-text-muted">Encrypt text data</div>
+                </button>
+                <button onclick="executeFromPalette('jawta signal generate')" class="w-full text-left p-2 rounded hover:bg-jawta-surface transition-colors">
+                    <div class="font-mono text-sm text-jawta-primary">jawta signal generate</div>
+                    <div class="text-xs text-jawta-text-muted">Generate test signals</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Background overlay for command palette -->
+    <div id="palette-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[999] opacity-0 invisible transition-all duration-300"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="text-cyan-400">JAWTA</span>
+                    <span class="text-white">Terminal</span>
+                </h2>
+                <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                    Professional command-line interface for signal processing, text conversion, encryption, and communication analysis. 
+                    Available as standalone CLI or embedded web terminal.
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <div class="install-badge">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                        Linux • macOS • Windows
+                    </div>
+                    <div class="install-badge">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                        120+ Commands
+                    </div>
+                    <div class="install-badge">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Open Source
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Terminal Demo -->
+            <div class="max-w-5xl mx-auto">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                        <span class="text-sm text-gray-400 ml-4">jawta-terminal — v0.3.0</span>
+                        <div class="ml-auto flex items-center space-x-2">
+                            <button class="text-xs text-gray-400 hover:text-white transition-colors">Clear</button>
+                            <button class="text-xs text-gray-400 hover:text-white transition-colors">Copy</button>
+                            <button class="text-xs text-gray-400 hover:text-white transition-colors">Export</button>
+                        </div>
+                    </div>
+                    <div class="terminal-content hero-terminal" id="demo-terminal">
+                        <div class="command-line">
+                            <span class="prompt">jawta@terminal:~$</span>
+                            <span class="command">jawta --version</span>
+                        </div>
+                        <div class="output info">JAWTA Terminal v0.3.0
+Signal Processing & Intelligence CLI
+Build: 2025-01-20 | Node.js Compatible</div>
+
+                        <div class="command-line">
+                            <span class="prompt">jawta@terminal:~$</span>
+                            <span class="command">jawta text morse "SOS EMERGENCY"</span>
+                        </div>
+                        <div class="output success">... --- ... / . -- . .-. --. . -. -.-. -.--</div>
+
+                        <div class="command-line">
+                            <span class="prompt">jawta@terminal:~$</span>
+                            <span class="command">jawta crypto encrypt "classified data" -m base64</span>
+                        </div>
+                        <div class="output">Y2xhc3NpZmllZCBkYXRh</div>
+
+                        <div class="command-line">
+                            <span class="prompt">jawta@terminal:~$</span>
+                            <span class="command">jawta signal analyze --type rf --output signal_report.json</span>
+                        </div>
+                        <div class="output info">Analyzing RF signal data...
+Signal Strength: 87%
+Frequency: 2437.5 MHz
+Quality: Excellent
+✓ Report saved to signal_report.json</div>
+
+                        <div class="command-line">
+                            <span class="prompt">jawta@terminal:~$</span>
+                            <span class="command typing-animation" id="typing-command"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What's New / Updated Files Section -->
+    <section class="py-16 bg-black/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">What's New in v0.3.0</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Changelog -->
+                <div class="feature-card">
+                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Release Highlights
+                    </h3>
+                    
+                    <div class="space-y-0">
+                        <div class="changelog-item">
+                            <div class="changelog-icon new">NEW</div>
+                            <div>
+                                <div class="font-medium text-white">Terminal CLI System</div>
+                                <div class="text-sm text-gray-400">Complete standalone CLI with 120+ commands</div>
+                            </div>
+                        </div>
+                        
+                        <div class="changelog-item">
+                            <div class="changelog-icon new">NEW</div>
+                            <div>
+                                <div class="font-medium text-white">Web Terminal Interface</div>
+                                <div class="text-sm text-gray-400">Browser-based terminal emulator with full CLI functionality</div>
+                            </div>
+                        </div>
+                        
+                        <div class="changelog-item">
+                            <div class="changelog-icon updated">UPD</div>
+                            <div>
+                                <div class="font-medium text-white">Text Utilities Enhanced</div>
+                                <div class="text-sm text-gray-400">Fixed missing encryption, decryption, and Wingdings functions</div>
+                            </div>
+                        </div>
+                        
+                        <div class="changelog-item">
+                            <div class="changelog-icon fixed">FIX</div>
+                            <div>
+                                <div class="font-medium text-white">Spectrum Analysis Fixes</div>
+                                <div class="text-sm text-gray-400">Resolved array initialization issues in SpectrumTabView</div>
+                            </div>
+                        </div>
+                        
+                        <div class="changelog-item">
+                            <div class="changelog-icon updated">UPD</div>
+                            <div>
+                                <div class="font-medium text-white">Version Information</div>
+                                <div class="text-sm text-gray-400">Added comprehensive version display in Signal Intel tab</div>
+                            </div>
+                        </div>
+                        
+                        <div class="changelog-item">
+                            <div class="changelog-icon updated">UPD</div>
+                            <div>
+                                <div class="font-medium text-white">Launch Window</div>
+                                <div class="text-sm text-gray-400">Updated index.html to point to correct Figma site</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Updated Files List -->
+                <div class="feature-card">
+                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        Updated Files to Download
+                    </h3>
+                    
+                    <div class="file-tree">
+<span class="comment"># Core Application Files</span>
+<span class="modified">App.tsx</span> <span class="comment"># Version info, CLI integration</span>
+<span class="modified">index.html</span> <span class="comment"># Updated Figma site link</span>
+<span class="new">terminal.html</span> <span class="comment"># New CLI showcase page</span>
+<span class="modified">styles/globals.css</span> <span class="comment"># Enhanced styling</span>
+
+<span class="comment"># NEW: CLI Terminal System</span>
+<span class="folder">cli/</span>
+├── <span class="new">jawta-cli.js</span> <span class="comment"># Main CLI entry point</span>
+├── <span class="new">package.json</span> <span class="comment"># Package configuration</span>
+├── <span class="new">README.md</span> <span class="comment"># CLI documentation</span>
+├── <span class="new">install.sh</span> <span class="comment"># Installation script</span>
+├── <span class="folder">test/</span>
+│   └── <span class="new">test-cli.js</span> <span class="comment"># CLI test suite</span>
+└── <span class="folder">utils/</span>
+    ├── <span class="new">textUtils.js</span> <span class="comment"># Node.js text utils</span>
+    ├── <span class="new">signalUtils.js</span> <span class="comment"># Signal processing</span>
+    └── <span class="new">steganographyUtils.js</span> <span class="comment"># Data hiding</span>
+
+<span class="comment"># Updated Components</span>
+<span class="folder">components/</span>
+├── <span class="folder">utils/</span>
+│   └── <span class="modified">textUtils.ts</span> <span class="comment"># Fixed missing functions</span>
+├── <span class="folder">pages/</span>
+│   ├── <span class="modified">LiveRadioIntelPage.tsx</span> <span class="comment"># Version info, terminal</span>
+│   └── <span class="modified">SpectrumTabView.tsx</span> <span class="comment"># Array initialization fix</span>
+└── <span class="folder">visualization/</span>
+    └── <span class="new">WebTerminalInterface.tsx</span> <span class="comment"># Web terminal emulator</span>
+
+<span class="comment"># Documentation Updates</span>
+<span class="modified">README.md</span> <span class="comment"># CLI installation info</span>
+<span class="modified">CHANGELOG.md</span> <span class="comment"># Version 0.3.0 changes</span>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-cyan-900/20 border border-cyan-700/30 rounded-lg">
+                        <div class="text-sm text-cyan-300 mb-2">&#x1F4E6; Quick Download</div>
+                        <div class="text-xs text-gray-400">
+                            Download only the files marked as <span class="text-yellow-400">NEW</span> or <span class="text-cyan-400">MODIFIED</span> 
+                            above to update your local installation to v0.3.0.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Download Instructions -->
+            <div class="mt-8 jawta-card rounded-lg p-6">
+                <h4 class="font-semibold mb-4 text-green-400">Update Instructions</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div>
+                        <h5 class="font-medium mb-2">1. Backup Current Files</h5>
+                        <p class="text-gray-400">Save your current installation before updating to prevent data loss.</p>
+                    </div>
+                    <div>
+                        <h5 class="font-medium mb-2">2. Download Updated Files</h5>
+                        <p class="text-gray-400">Download only the files marked as NEW or MODIFIED from the list above.</p>
+                    </div>
+                    <div>
+                        <h5 class="font-medium mb-2">3. Install CLI (Optional)</h5>
+                        <p class="text-gray-400">Run <code class="text-cyan-400">npm install -g jawta-cli</code> for standalone terminal.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Quick Installation</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- NPM Installation -->
+                <div class="feature-card">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-green-600 rounded flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H8.595l-.01-10.383H5.113l.017-3.464z"/>
+                        </div>
+                        <h3 class="text-lg font-semibold">Global NPM Install</h3>
+                    </div>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+                            <span class="comment"># Install globally with npm</span><br>
+                            <span class="keyword">npm</span> <span class="string">install</span> <span class="operator">-g</span> <span class="string">jawta-cli</span><br><br>
+                            <span class="comment"># Verify installation</span><br>
+                            <span class="keyword">jawta</span> <span class="operator">--version</span><br><br>
+                            <span class="comment"># Start using</span><br>
+                            <span class="keyword">jawta</span> <span class="string">text morse</span> <span class="string">"Hello World"</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400">Requires Node.js 14+ • Automatic updates • Cross-platform</p>
+                </div>
+
+                <!-- Standalone Binary -->
+                <div class="feature-card">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-purple-600 rounded flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold">Standalone Binary</h3>
+                    </div>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+                            <span class="comment"># One-line install script</span><br>
+                            <span class="keyword">curl</span> <span class="operator">-L</span> <span class="string">https://install.jawta.dev</span> <span class="operator">|</span> <span class="keyword">bash</span><br><br>
+                            <span class="comment"># Or download specific platform:</span><br>
+                            <span class="comment"># • jawta-linux-x64</span><br>
+                            <span class="comment"># • jawta-macos-x64</span><br>
+                            <span class="comment"># • jawta-windows-x64.exe</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400">No dependencies • Portable • Pre-compiled binaries</p>
+                </div>
+
+                <!-- Web Terminal -->
+                <div class="feature-card">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-cyan-600 rounded flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M2 3h20v18H2V3zm18 16V5H4v14h16zM6 7h12v2H6V7zm0 4h8v2H6v-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold">Web Terminal</h3>
+                    </div>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+                            <span class="comment"># Access via main application</span><br>
+                            <span class="keyword">Signal Intel</span> <span class="operator">→</span> <span class="string">Terminal Tab</span><br><br>
+                            <span class="comment"># Or use this page</span><br>
+                            <span class="keyword">Click</span> <span class="string">"Launch Terminal"</span> <span class="string">above</span><br><br>
+                            <span class="comment"># Same commands, browser-based</span><br>
+                            <span class="string">No installation required</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400">Browser-based • Instant access • Mobile compatible</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Overview -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Terminal Capabilities</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Text Processing -->
+                <div class="feature-card text-center">
+                    <div class="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Text Processing</h3>
+                    <p class="text-sm text-gray-400 mb-4">Morse code, T9 conversion, ASCII art, Unicode analysis</p>
+                    <div class="text-xs text-cyan-400 font-mono">
+                        jawta text morse "SOS"<br>
+                        jawta text ascii "HELLO"<br>
+                        jawta text unicode "&#x1F525;"
+                    </div>
+                </div>
+
+                <!-- Encryption -->
+                <div class="feature-card text-center">
+                    <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Encryption & Crypto</h3>
+                    <p class="text-sm text-gray-400 mb-4">Caesar, Base64, AES, RSA, custom algorithms</p>
+                    <div class="text-xs text-cyan-400 font-mono">
+                        jawta crypto encrypt "data"<br>
+                        jawta crypto decrypt "Y2xhc3M="<br>
+                        jawta crypto -m aes -k secret
+                    </div>
+                </div>
+
+                <!-- Signal Analysis -->
+                <div class="feature-card text-center">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 3v18h18v-2H5V3H3zm4 12h2v4H7v-4zm4-4h2v8h-2V11zm4-4h2v12h-2V7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Signal Analysis</h3>
+                    <p class="text-sm text-gray-400 mb-4">RF analysis, spectrum generation, test signals</p>
+                    <div class="text-xs text-cyan-400 font-mono">
+                        jawta signal analyze data.rf<br>
+                        jawta signal generate -f 440<br>
+                        jawta signal test --type sine
+                    </div>
+                </div>
+
+                <!-- Steganography -->
+                <div class="feature-card text-center">
+                    <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 neon-glow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Steganography</h3>
+                    <p class="text-sm text-gray-400 mb-4">Hide data in text, extract hidden information</p>
+                    <div class="text-xs text-cyan-400 font-mono">
+                        jawta stego hide "secret" file.txt<br>
+                        jawta stego extract hidden.txt<br>
+                        jawta stego analyze image.png
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Command Examples -->
+    <section class="py-16 bg-black/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Command Examples</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Basic Commands -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Basic Commands
+                    </h3>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+<span class="comment"># Get help</span>
+<span class="keyword">jawta</span> <span class="operator">--help</span>
+<span class="keyword">jawta</span> <span class="string">text</span> <span class="operator">--help</span>
+
+<span class="comment"># Convert text to Morse code</span>
+<span class="keyword">jawta</span> <span class="string">text morse</span> <span class="string">"HELLO WORLD"</span>
+<span class="comment"># Output: .... . .-.. .-.. --- / .-- --- .-. .-.. -..</span>
+
+<span class="comment"># Morse to text</span>
+<span class="keyword">jawta</span> <span class="string">text morse</span> <span class="string">"... --- ..."</span> <span class="operator">--reverse</span>
+<span class="comment"># Output: SOS</span>
+
+<span class="comment"># Generate ASCII art</span>
+<span class="keyword">jawta</span> <span class="string">text ascii</span> <span class="string">"JAWTA"</span>
+
+<span class="comment"># Convert to T9 mobile keypad</span>
+<span class="keyword">jawta</span> <span class="string">text t9</span> <span class="string">"HELLO"</span>
+<span class="comment"># Output: 44 33 555 555 666</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Commands -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                        Advanced Usage
+                    </h3>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+<span class="comment"># Encrypt with different methods</span>
+<span class="keyword">jawta</span> <span class="string">crypto encrypt</span> <span class="string">"secret"</span> <span class="operator">-m</span> <span class="string">caesar</span>
+<span class="keyword">jawta</span> <span class="string">crypto encrypt</span> <span class="string">"data"</span> <span class="operator">-m</span> <span class="string">base64</span>
+<span class="keyword">jawta</span> <span class="string">crypto encrypt</span> <span class="string">"text"</span> <span class="operator">-m</span> <span class="string">vigenere</span> <span class="operator">-k</span> <span class="string">"KEY"</span>
+
+<span class="comment"># Signal processing</span>
+<span class="keyword">jawta</span> <span class="string">signal generate</span> <span class="operator">--type</span> <span class="string">sine</span> <span class="operator">-f</span> <span class="number">440</span> <span class="operator">-d</span> <span class="number">2</span>
+<span class="keyword">jawta</span> <span class="string">signal analyze</span> <span class="string">signal.dat</span> <span class="operator">--file</span>
+
+<span class="comment"># Batch processing</span>
+<span class="keyword">jawta</span> <span class="string">batch process</span> <span class="string">"*.txt"</span> <span class="operator">-c</span> <span class="string">"morse"</span>
+
+<span class="comment"># Interactive mode</span>
+<span class="keyword">jawta</span> <span class="string">interactive</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Operations -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        File Operations
+                    </h3>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+<span class="comment"># Save output to file</span>
+<span class="keyword">jawta</span> <span class="string">text morse</span> <span class="string">"EMERGENCY"</span> <span class="operator">-o</span> <span class="string">emergency.txt</span>
+
+<span class="comment"># Process file input</span>
+<span class="keyword">jawta</span> <span class="string">crypto decrypt</span> <span class="string">encrypted.txt</span> <span class="operator">--file</span>
+
+<span class="comment"># Chain commands</span>
+<span class="keyword">jawta</span> <span class="string">text morse</span> <span class="string">"SOS"</span> <span class="operator">|</span> <span class="keyword">jawta</span> <span class="string">text patterns</span>
+
+<span class="comment"># Export formats</span>
+<span class="keyword">jawta</span> <span class="string">signal analyze</span> <span class="string">data.rf</span> <span class="operator">-o</span> <span class="string">report.json</span>
+<span class="keyword">jawta</span> <span class="string">text unicode</span> <span class="string">"Hello &#x1F30D;"</span> <span class="operator">-f</span> <span class="string">csv</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile & Patterns -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                        Mobile & Patterns
+                    </h3>
+                    <div class="command-showcase">
+                        <div class="syntax-highlight">
+<span class="comment"># Mobile device patterns</span>
+<span class="keyword">jawta</span> <span class="string">text patterns</span> <span class="string">"SOS"</span> <span class="operator">--type</span> <span class="string">light</span>
+<span class="keyword">jawta</span> <span class="string">text patterns</span> <span class="string">"HELP"</span> <span class="operator">--type</span> <span class="string">vibration</span>
+
+<span class="comment"># Custom languages</span>
+<span class="keyword">jawta</span> <span class="string">translate custom</span> <span class="string">"hello"</span> <span class="operator">-l</span> <span class="string">binary</span>
+<span class="keyword">jawta</span> <span class="string">translate custom</span> <span class="string">"data"</span> <span class="operator">-l</span> <span class="string">hex</span>
+
+<span class="comment"># Steganography</span>
+<span class="keyword">jawta</span> <span class="string">stego hide</span> <span class="string">"secret"</span> <span class="string">"normal text"</span>
+<span class="keyword">jawta</span> <span class="string">stego extract</span> <span class="string">suspicious.txt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Commands Section -->
+    <section class="py-16 bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">
+                    <span class="text-cyan-400">Quick Start Commands</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Try these commands to get started with JAWTA Terminal. Copy and paste them into the interactive terminal below.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <!-- Text Commands -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        Text Conversion
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta text morse "SOS EMERGENCY"</code>
+                            <div class="text-sm text-gray-400 mt-1">Convert text to Morse code</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta text ascii "JAWTA"</code>
+                            <div class="text-sm text-gray-400 mt-1">Generate ASCII art text</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta text t9 "HELLO WORLD"</code>
+                            <div class="text-sm text-gray-400 mt-1">Convert to T9 mobile keypad</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Crypto Commands -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                        </svg>
+                        Encryption & Crypto
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta crypto encrypt "secret data" -m base64</code>
+                            <div class="text-sm text-gray-400 mt-1">Base64 encode text</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta crypto encrypt "message" -m caesar</code>
+                            <div class="text-sm text-gray-400 mt-1">Caesar cipher encryption</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta crypto hash "password" -m sha256</code>
+                            <div class="text-sm text-gray-400 mt-1">Generate SHA256 hash</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signal Commands -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 3v18h18v-2H5V3H3zm4 12h2v4H7v-4zm4-4h2v8h-2V11zm4-4h2v12h-2V7z"/>
+                        </svg>
+                        Signal Processing
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta signal generate --type sine -f 440</code>
+                            <div class="text-sm text-gray-400 mt-1">Generate 440Hz sine wave</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta signal analyze --type rf</code>
+                            <div class="text-sm text-gray-400 mt-1">Analyze RF signal data</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta spectrum visualize -f 2400</code>
+                            <div class="text-sm text-gray-400 mt-1">Display spectrum analysis</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network & Trace Commands -->
+                <div class="jawta-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Network & IANA Trace
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta trace route 8.8.8.8</code>
+                            <div class="text-sm text-gray-400 mt-1">Traceroute to Google DNS</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta trace ping 1.1.1.1</code>
+                            <div class="text-sm text-gray-400 mt-1">Enhanced ping with visualization</div>
+                        </div>
+                        <div class="command-demo">
+                            <code class="text-cyan-400">jawta trace iana lookup example.com</code>
+                            <div class="text-sm text-gray-400 mt-1">IANA registry lookup</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <div class="inline-flex items-center gap-2 px-6 py-3 bg-cyan-900/20 border border-cyan-700/30 rounded-lg">
+                    <svg class="w-5 h-5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                    <span class="text-cyan-300 font-medium">Click on any command below to try it in the interactive terminal</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Terminal Section -->
+    <section class="py-16" id="interactive-terminal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <img src="public/assets/jawta-cgreen-28x28.png" alt="JAWTA" class="w-8 h-8">
+                    <h2 class="text-3xl font-bold">Try JAWTA Terminal</h2>
+                    <img src="public/assets/jawta-sbw-t-28x28.png" alt="JAWTA" class="w-8 h-8">
+                </div>
+                <p class="text-jawta-text-muted max-w-2xl mx-auto">Experience the power of signal processing with our interactive terminal. Execute real commands and see live visualizations.</p>
+            </div>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                        <div class="flex items-center gap-2 ml-4">
+                            <img src="public/assets/jawta-cbw-28x28.png" alt="JAWTA" class="w-4 h-4">
+                            <span class="text-sm text-gray-400">jawta-terminal — Interactive Demo</span>
+                        </div>
+                        <div class="ml-auto flex items-center space-x-2">
+                            <button onclick="clearTerminal()" class="text-xs text-gray-400 hover:text-white transition-colors">Clear</button>
+                            <button onclick="copyTerminalOutput()" class="text-xs text-gray-400 hover:text-white transition-colors">Copy</button>
+                            <button onclick="resetDemo()" class="text-xs text-gray-400 hover:text-white transition-colors">Reset</button>
+                        </div>
+                    </div>
+                    <div class="terminal-content" id="interactive-terminal-content" style="max-height: 400px;">
+                        <div class="command-line">
+                            <span class="prompt">jawta@demo:~$</span>
+                            <span class="command">jawta --help</span>
+                        </div>
+                        <div class="output info">JAWTA Terminal v0.3.0 - Signal Processing CLI
+
+Usage: jawta [command] [options]
+
+Commands:
+  text        Text processing utilities (morse, t9, ascii, unicode)
+  crypto      Encryption and decryption tools
+  signal      Signal analysis and generation
+  stego       Steganography utilities
+  translate   Custom language translation
+  batch       Batch processing
+  interactive Start interactive mode
+  system      System diagnostics and info
+  rf          RF analysis and monitoring
+  trace       Network trace and IANA tools
+  spectrum    Spectrum analysis and visualization
+
+Signal Notation Examples:
+  jawta signal ".s('sine').dec(.3).room(.5)._spectrum()"
+  jawta signal "(.sine).delay(0.2).reverb(0.3)"
+  
+Network Tools:
+  jawta trace route 8.8.8.8           Traceroute to destination
+  jawta trace iana lookup example.com IANA registry lookup
+  jawta trace ping 1.1.1.1            Enhanced ping with visualization
+
+Type 'jawta [command] --help' for detailed information.</div>
+                        <div class="command-line">
+                            <span class="prompt">jawta@demo:~$</span>
+                            <input type="text" id="terminal-input" class="command bg-transparent border-none outline-none text-white flex-1" placeholder="Type a command... (Try: jawta --help)" onkeydown="handleTerminalInput(event)" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Terminal Commands Database
+        const terminalCommands = {
+            'jawta --help': {
+                output: `JAWTA Terminal v0.3.0 - Signal Processing CLI
+
+Usage: jawta [command] [options]
+
+Commands:
+  text        Text processing utilities (morse, t9, ascii, unicode)
+  crypto      Encryption and decryption tools
+  signal      Signal analysis and generation
+  stego       Steganography utilities
+  translate   Custom language translation
+  batch       Batch processing
+  interactive Start interactive mode
+  system      System diagnostics and info
+  rf          RF analysis and monitoring
+  trace       Network trace and IANA tools
+  spectrum    Spectrum analysis and visualization
+
+Signal Notation Examples:
+  jawta signal ".s('sine').dec(.3).room(.5)._spectrum()"
+  jawta signal "(.sine).delay(0.2).reverb(0.3)"
+  
+Network Tools:
+  jawta trace route 8.8.8.8           Traceroute to destination
+  jawta trace iana lookup example.com IANA registry lookup
+  jawta trace ping 1.1.1.1            Enhanced ping with visualization
+
+Type 'jawta [command] --help' for detailed information.`,
+                type: 'info',
+                delay: 100
+            },
+            // Signal Waveform Commands
+            'jawta signal ".s(\'sine\').dec(.3).room(.5)._spectrum()"': {
+                output: 'signal_waveform_sine',
+                type: 'waveform',
+                delay: 150,
+                params: { type: 'sine', decay: 0.3, room: 0.5, spectrum: true }
+            },
+            'jawta signal "(.sine).delay(0.2).reverb(0.3)"': {
+                output: 'signal_waveform_reverb',
+                type: 'waveform',
+                delay: 140,
+                params: { type: 'sine', delay: 0.2, reverb: 0.3 }
+            },
+            'jawta signal ".s(\'square\').amp(.8).lpf(1000)"': {
+                output: 'signal_waveform_square',
+                type: 'waveform',
+                delay: 130,
+                params: { type: 'square', amplitude: 0.8, lowpass: 1000 }
+            },
+            'jawta signal ".s(\'sawtooth\').oct(2).chorus(.4)"': {
+                output: 'signal_waveform_sawtooth',
+                type: 'waveform',
+                delay: 120,
+                params: { type: 'sawtooth', octave: 2, chorus: 0.4 }
+            },
+            // IANA Trace Tools
+            'jawta trace route 8.8.8.8': {
+                output: 'trace_route_google',
+                type: 'trace',
+                delay: 200
+            },
+            'jawta trace route 1.1.1.1': {
+                output: 'trace_route_cloudflare',
+                type: 'trace',
+                delay: 180
+            },
+            'jawta trace iana lookup example.com': {
+                output: `🌐 IANA Registry Lookup: example.com
+┌─────────────────────────────────────┐
+│ Domain: example.com                 │
+│ TLD: .com                          │
+│ Registry: VeriSign                  │
+│ IANA ID: 1369                      │
+│ Registrar: Reserved Domain          │
+│ Status: Reserved (RFC 2606)         │
+│ Created: 1995-08-14                │
+│ Updated: 2023-08-14                │
+│ Expires: Reserved                   │
+│ DNSSEC: No                         │
+│ Name Servers:                      │
+│   a.iana-servers.net              │
+│   b.iana-servers.net              │
+└─────────────────────────────────────┘`,
+│ Domain: example.com                 │
+│ TLD: .com                          │
+│ Registry: VeriSign                  │
+│ IANA ID: 1369                      │
+│ Registrar: Reserved Domain          │
+│ Status: Reserved (RFC 2606)         │
+│ Created: 1995-08-14                │
+│ Updated: 2023-08-14                │
+│ Expires: Reserved                   │
+│ DNSSEC: No                         │
+│ Name Servers:                      │
+│   a.iana-servers.net              │
+│   b.iana-servers.net              │
+└─────────────────────────────────────┘`,
+                type: 'info',
+                delay: 160
+            },
+            'jawta trace ping 1.1.1.1': {
+                output: 'ping_visualization',
+                type: 'ping',
+                delay: 100
+            },
+            'jawta spectrum analyze --freq 2400': {
+                output: 'spectrum_analysis',
+                type: 'spectrum',
+                delay: 200
+            },
+            'jawta logo': {
+                output: `    
+     ██╗ █████╗ ██╗    ██╗████████╗ █████╗ 
+     ██║██╔══██╗██║    ██║╚══██╔══╝██╔══██╗
+     ██║███████║██║ █╗ ██║   ██║   ███████║
+██   ██║██╔══██║██║███╗██║   ██║   ██╔══██║
+╚█████╔╝██║  ██║╚███╔███╔╝   ██║   ██║  ██║
+ ╚════╝ ╚═╝  ╚═╝ ╚══╝╚══╝    ╚═╝   ╚═╝  ╚═╝
+
+&#x1F50A; Signal Processing & Intelligence Terminal
+&#x1F30A; Advanced waveform analysis and generation
+&#x1F510; Cryptographic utilities and steganography
+&#x1F4E1; RF analysis and network diagnostics
+&#x26A1; Real-time visualization and monitoring
+
+Visit: https://github.com/jawta-signal`,
+                type: 'success',
+                delay: 80
+            },
+            'jawta branding': {
+                output: `&#x1F3A8; JAWTA Brand Assets:
+┌─────────────────────────────────────┐
+│ Primary Logo: jawta-cgreen-28x28    │
+│ Banner: jawta-banner.png            │
+│ Icons: jawta-cbw-28x28.png          │
+│ Favicon: jawta-favicon-256px.png    │
+│ Colors: Cyan (#06b6d4) & Green      │
+│ Font: JetBrains Mono (monospace)    │
+│ Style: Modern terminal aesthetic    │
+└─────────────────────────────────────┘`,
+                type: 'info',
+                delay: 120
+            },
+            'jawta text morse "HELLO"': {
+                output: '.... . .-.. .-.. ---\n\nDecoding: H E L L O\nDuration: ~2.5 seconds at 20 WPM',
+                type: 'success',
+                delay: 150
+            },
+            'jawta text morse "SOS"': {
+                output: '... --- ...\n\nEmergency signal detected!\nDuration: ~1.8 seconds at 20 WPM',
+                type: 'success',
+                delay: 200
+            },
+            'jawta text morse "EMERGENCY"': {
+                output: '. -- . .-. --. . -. -.-. -.--\n\n&#x26A0;&#xFE0F;  EMERGENCY SIGNAL ENCODED &#x26A0;&#xFE0F;\nDuration: ~4.2 seconds at 20 WPM',
+                type: 'warning',
+                delay: 180
+            },
+            'jawta crypto encrypt "test" -m base64': {
+                output: 'dGVzdA==\n\nMethod: Base64 encoding\nInput length: 4 bytes\nOutput length: 8 bytes\nCompression ratio: 1.33:1',
+                type: 'success',
+                delay: 120
+            },
+            'jawta crypto encrypt "classified"': {
+                output: 'Y2xhc3NpZmllZA==\n\n&#x1F512; Data encrypted successfully\nMethod: Base64 (demo mode)\nEntropy: 2.75 bits/char',
+                type: 'success',
+                delay: 140
+            },
+            'jawta text ascii "JAWTA"': {
+                output: `    
+     ██╗ █████╗ ██╗    ██╗████████╗ █████╗ 
+     ██║██╔══██╗██║    ██║╚══██╔══╝██╔══██╗
+     ██║███████║██║ █╗ ██║   ██║   ███████║
+██   ██║██╔══██║██║███╗██║   ██║   ██╔══██║
+╚█████╔╝██║  ██║╚███╔███╔╝   ██║   ██║  ██║
+ ╚════╝ ╚═╝  ╚═╝ ╚══╝╚══╝    ╚═╝   ╚═╝  ╚═╝
+
+Generated ASCII art using block characters`,
+                type: 'success',
+                delay: 80
+            },
+            'jawta signal generate --type sine': {
+                output: `&#x1F30A; Generated Signal:
+┌─────────────────────────────────────┐
+│ Type: Sine Wave                     │
+│ Frequency: 440 Hz (A4 Note)        │
+│ Duration: 1.0s                      │
+│ Sample Rate: 44.1 kHz               │
+│ Samples: 44,100                     │
+│ Peak Amplitude: 1.0                 │
+│ RMS: 0.707                          │
+│ THD: <0.01%                         │
+└─────────────────────────────────────┘`,
+                type: 'info',
+                delay: 100
+            },
+            'jawta signal test --freq 2400': {
+                output: `&#x1F4E1; RF Signal Test - 2.4 GHz
+┌─────────────────────────────────────┐
+│ Frequency: 2.400 GHz                │
+│ Bandwidth: 20 MHz                   │
+│ Power: -20 dBm                      │
+│ Modulation: FSK                     │
+│ Status: &#x2705; Signal generated         │
+│ SNR: 35.2 dB                        │
+│ VSWR: 1.2:1                         │
+└─────────────────────────────────────┘`,
+                type: 'info',
+                delay: 130
+            },
+            'jawta system status': {
+                output: `&#x1F5A5;&#xFE0F;  System Status:
+┌─────────────────────────────────────┐
+│ CPU: Intel Core i7-12700K           │
+│ Memory: 16 GB DDR4                  │
+│ Storage: 512 GB NVMe SSD            │
+│ Network: 1 Gbps Ethernet            │
+│ RF Hardware: SDR-RTL v3.0           │
+│ Status: &#x2705; All systems operational  │
+│ Uptime: 7d 14h 32m                  │
+└─────────────────────────────────────┘`,
+                type: 'info',
+                delay: 90
+            },
+            'jawta stego hide "secret" message.txt': {
+                output: `&#x1F50D; Steganography Operation:
+┌─────────────────────────────────────┐
+│ Message: "secret"                   │
+│ Carrier: message.txt                │
+│ Method: LSB embedding               │
+│ Capacity: 2048 bytes                │
+│ Used: 6 bytes (0.3%)                │
+│ Status: &#x2705; Message hidden           │
+│ Output: message_stego.txt           │
+└─────────────────────────────────────┘`,
+                type: 'success',
+                delay: 160
+            },
+            'jawta rf scan --freq 2.4GHz': {
+                output: `&#x1F4E1; RF Spectrum Scan (2.4 GHz Band):
+┌─────────────────────────────────────┐
+│ 2401 MHz: -45 dBm  ████████░░░      │
+│ 2412 MHz: -52 dBm  ██████░░░░░      │
+│ 2437 MHz: -38 dBm  ███████████░     │
+│ 2462 MHz: -41 dBm  █████████░░░     │
+│ Strongest: 2437 MHz (-38 dBm)       │
+│ Noise Floor: -85 dBm                │
+│ Active Channels: 4/14               │
+└─────────────────────────────────────┘`,
+                type: 'info',
+                delay: 200
+            },
+            'jawta interactive': {
+                output: `&#x1F680; Entering Interactive Mode...
+┌─────────────────────────────────────┐
+│ JAWTA Interactive Shell v0.3.0      │
+│ Type 'exit' to return to normal     │
+│ Enhanced autocomplete enabled       │
+│ History buffer: 1000 commands       │
+│ Tab completion: Available           │
+│ Signal notation: Supported          │
+│ Network tools: Enabled              │
+└─────────────────────────────────────┘
+
+jawta> _`,
+                type: 'info',
+                delay: 100
+            },
+            'ls': {
+                output: `documents/  projects/  tools/  samples/
+config.json  README.md  LICENSE`,
+                type: 'info',
+                delay: 50
+            },
+            'pwd': {
+                output: '/home/jawta/workspace',
+                type: 'info',
+                delay: 30
+            },
+            'whoami': {
+                output: 'jawta-user',
+                type: 'info',
+                delay: 30
+            },
+            'date': {
+                output: new Date().toLocaleString(),
+                type: 'info',
+                delay: 40
+            },
+            'clear': {
+                output: '',
+                type: 'clear'
+            }
+        };
+
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        function handleTerminalInput(event) {
+            const input = event.target;
+            const command = input.value.trim();
+            
+            if (event.key === 'Enter') {
+                if (command) {
+                    commandHistory.unshift(command);
+                    if (commandHistory.length > 50) commandHistory.pop();
+                    historyIndex = -1;
+                    
+                    runCommand(command);
+                    input.value = '';
+                }
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    input.value = commandHistory[historyIndex] || '';
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    input.value = commandHistory[historyIndex] || '';
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    input.value = '';
+                }
+            } else if (event.key === 'Tab') {
+                event.preventDefault();
+                // Simple autocomplete
+                const availableCommands = Object.keys(terminalCommands);
+                const matches = availableCommands.filter(cmd => cmd.startsWith(command));
+                if (matches.length === 1) {
+                    input.value = matches[0];
+                }
+            }
+        }
+
+        function runCommand(command) {
+            const terminal = document.getElementById('interactive-terminal-content');
+            
+            // Add command line with enhanced styling
+            const commandLine = document.createElement('div');
+            commandLine.className = 'command-line animate-fade-in-up';
+            commandLine.innerHTML = `
+                <span class="prompt">jawta@demo:~$</span>
+                <span class="command">${escapeHtml(command)}</span>
+            `;
+            
+            // Remove the input line temporarily
+            const inputLine = terminal.lastElementChild;
+            if (inputLine) terminal.removeChild(inputLine);
+            
+            // Add the command
+            terminal.appendChild(commandLine);
+            
+            // Add output with special handling for visualizations
+            const cmdData = terminalCommands[command];
+            if (cmdData) {
+                if (cmdData.type === 'clear') {
+                    clearTerminal();
+                    return;
+                }
+                
+                const output = document.createElement('div');
+                output.className = `output ${cmdData.type}`;
+                
+                // Handle special visualization types
+                if (cmdData.type === 'waveform') {
+                    createWaveformVisualization(output, cmdData);
+                } else if (cmdData.type === 'trace') {
+                    createTraceVisualization(output, cmdData);
+                } else if (cmdData.type === 'ping') {
+                    createPingVisualization(output, cmdData);
+                } else if (cmdData.type === 'spectrum') {
+                    createSpectrumVisualization(output, cmdData);
+                } else {
+                    // Regular text output with typing animation
+                    if (cmdData.output.length > 50 && cmdData.delay) {
+                        output.style.opacity = '0';
+                        terminal.appendChild(output);
+                        
+                        setTimeout(() => {
+                            typeWriter(output, cmdData.output, cmdData.delay || 50);
+                        }, 200);
+                    } else {
+                        output.innerHTML = formatOutput(cmdData.output);
+                        output.style.animation = 'fadeInUp 0.3s ease-out';
+                        terminal.appendChild(output);
+                    }
+                }
+                
+                if (cmdData.type !== 'waveform' && cmdData.type !== 'trace' && cmdData.type !== 'ping' && cmdData.type !== 'spectrum') {
+                    terminal.appendChild(output);
+                }
+            } else {
+                const output = document.createElement('div');
+                output.className = 'output error';
+                const baseCommand = command.split(' ')[0];
+                output.innerHTML = `
+                    <span style="color: #ff6b6b;">&#x274C; jawta: command not found: ${escapeHtml(baseCommand)}</span>
+                    <div style="margin-top: 8px; color: #fbbf24; font-size: 0.9em;">
+                        &#x1F4A1; Try: <code style="background: rgba(251, 191, 36, 0.2); padding: 2px 6px; border-radius: 3px;">jawta --help</code> for available commands
+                    </div>
+                `;
+                output.style.animation = 'fadeInUp 0.3s ease-out';
+                terminal.appendChild(output);
+            }
+            
+            // Add input line back
+            if (inputLine) terminal.appendChild(inputLine);
+            
+            // Scroll to bottom with smooth animation
+            setTimeout(() => {
+                terminal.scrollTo({
+                    top: terminal.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+
+        // Waveform visualization function
+        function createWaveformVisualization(output, cmdData) {
+            const terminal = document.getElementById('interactive-terminal-content');
+            
+            // Create signal notation display
+            const notationDiv = document.createElement('div');
+            notationDiv.className = 'signal-notation';
+            notationDiv.innerHTML = highlightSignalNotation(extractNotationFromCommand(cmdData.output));
+            
+            // Create waveform container
+            const waveformDiv = document.createElement('div');
+            waveformDiv.className = 'waveform-container';
+            
+            const canvas = document.createElement('canvas');
+            canvas.className = 'waveform-canvas';
+            canvas.width = 600;
+            canvas.height = 120;
+            
+            const controls = document.createElement('div');
+            controls.className = 'waveform-controls';
+            controls.innerHTML = generateWaveformControls(cmdData.params);
+            
+            waveformDiv.appendChild(canvas);
+            waveformDiv.appendChild(controls);
+            
+            // Add both elements to terminal
+            terminal.appendChild(notationDiv);
+            terminal.appendChild(waveformDiv);
+            
+            // Animate waveform drawing
+            setTimeout(() => {
+                drawWaveform(canvas, cmdData.params);
+            }, 300);
+        }
+
+        // Trace route visualization
+        function createTraceVisualization(output, cmdData) {
+            const terminal = document.getElementById('interactive-terminal-content');
+            
+            const traceDiv = document.createElement('div');
+            traceDiv.className = 'trace-container';
+            
+            const target = cmdData.output.includes('8.8.8.8') ? '8.8.8.8' : '1.1.1.1';
+            const serviceName = target === '8.8.8.8' ? 'Google DNS' : 'Cloudflare DNS';
+            
+            traceDiv.innerHTML = `
+                <div class="trace-header">
+                    <span>&#x1F310; Traceroute to ${target} (${serviceName})</span>
+                    <span class="network-status status-online">● Online</span>
+                </div>
+                <div class="trace-hop">
+                    <span class="hop-number">1</span>
+                    <span class="hop-ip">192.168.1.1</span>
+                    <span class="hop-hostname">gateway.local</span>
+                    <span class="hop-timing">1.2ms</span>
+                    <span class="hop-flag flag-success">●</span>
+                </div>
+                <div class="trace-hop">
+                    <span class="hop-number">2</span>
+                    <span class="hop-ip">10.0.0.1</span>
+                    <span class="hop-hostname">isp-router.net</span>
+                    <span class="hop-timing">12.4ms</span>
+                    <span class="hop-flag flag-success">●</span>
+                </div>
+                <div class="trace-hop">
+                    <span class="hop-number">3</span>
+                    <span class="hop-ip">203.0.113.1</span>
+                    <span class="hop-hostname">backbone-1.isp.com</span>
+                    <span class="hop-timing">28.7ms</span>
+                    <span class="hop-flag flag-success">●</span>
+                </div>
+                <div class="trace-hop">
+                    <span class="hop-number">4</span>
+                    <span class="hop-ip">*</span>
+                    <span class="hop-hostname">* * *</span>
+                    <span class="hop-timing">timeout</span>
+                    <span class="hop-flag flag-timeout">◐</span>
+                </div>
+                <div class="trace-hop">
+                    <span class="hop-number">5</span>
+                    <span class="hop-ip">${target}</span>
+                    <span class="hop-hostname">${serviceName.toLowerCase().replace(' ', '-')}.com</span>
+                    <span class="hop-timing">42.1ms</span>
+                    <span class="hop-flag flag-success">●</span>
+                </div>
+            `;
+            
+            terminal.appendChild(traceDiv);
+        }
+
+        // Ping visualization
+        function createPingVisualization(output, cmdData) {
+            const terminal = document.getElementById('interactive-terminal-content');
+            
+            const pingDiv = document.createElement('div');
+            pingDiv.className = 'trace-container';
+            pingDiv.innerHTML = `
+                <div class="trace-header">
+                    <span>&#x1F3D3; PING 1.1.1.1 (Cloudflare DNS)</span>
+                    <span class="network-status status-online">● Connected</span>
+                </div>
+                <div class="output info" style="margin: 12px 0; border-left: none; padding-left: 0;">
+PING 1.1.1.1: 56 data bytes
+64 bytes from 1.1.1.1: icmp_seq=0 ttl=64 time=12.456 ms
+64 bytes from 1.1.1.1: icmp_seq=1 ttl=64 time=11.234 ms
+64 bytes from 1.1.1.1: icmp_seq=2 ttl=64 time=13.789 ms
+64 bytes from 1.1.1.1: icmp_seq=3 ttl=64 time=10.987 ms
+
+--- 1.1.1.1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss
+round-trip min/avg/max/stddev = 10.987/12.117/13.789/1.134 ms</div>
+            `;
+            
+            terminal.appendChild(pingDiv);
+        }
+
+        // Spectrum analyzer visualization
+        function createSpectrumVisualization(output, cmdData) {
+            const terminal = document.getElementById('interactive-terminal-content');
+            
+            const spectrumDiv = document.createElement('div');
+            spectrumDiv.className = 'spectrum-container';
+            
+            const display = document.createElement('div');
+            display.className = 'spectrum-display';
+            
+            // Create spectrum bars
+            for (let i = 0; i < 100; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'spectrum-bar';
+                bar.style.left = `${i * 2}%`;
+                bar.style.height = `${Math.random() * 80 + 10}%`;
+                display.appendChild(bar);
+            }
+            
+            const labels = document.createElement('div');
+            labels.className = 'spectrum-labels';
+            labels.innerHTML = `
+                <span>2400 MHz</span>
+                <span>2420 MHz</span>
+                <span>2440 MHz</span>
+                <span>2460 MHz</span>
+                <span>2480 MHz</span>
+            `;
+            
+            spectrumDiv.appendChild(display);
+            spectrumDiv.appendChild(labels);
+            
+            terminal.appendChild(spectrumDiv);
+            
+            // Animate spectrum bars
+            setTimeout(() => {
+                animateSpectrum(display);
+            }, 500);
+        }
+
+        // Helper functions
+        function extractNotationFromCommand(command) {
+            // Extract signal notation from command
+            if (command.includes('sine')) {
+                return '.s(\'sine\').dec(.3).room(.5)._spectrum()';
+            } else if (command.includes('reverb')) {
+                return '(.sine).delay(0.2).reverb(0.3)';
+            } else if (command.includes('square')) {
+                return '.s(\'square\').amp(.8).lpf(1000)';
+            } else if (command.includes('sawtooth')) {
+                return '.s(\'sawtooth\').oct(2).chorus(.4)';
+            }
+            return '.s(\'sine\').freq(440)';
+        }
+
+        function highlightSignalNotation(notation) {
+            return notation
+                .replace(/(\.[a-zA-Z_]+)/g, '<span class="method">$1</span>')
+                .replace(/(\([^)]*\))/g, '<span class="bracket">$1</span>')
+                .replace(/([0-9.]+)/g, '<span class="number">$1</span>')
+                .replace(/(\'[^\']*\')/g, '<span class="function">$1</span>');
+        }
+
+        function generateWaveformControls(params) {
+            let controls = [];
+            if (params.type) controls.push(`<span class="waveform-param">Type: <span class="value">${params.type}</span></span>`);
+            if (params.decay) controls.push(`<span class="waveform-param">Decay: <span class="value">${params.decay}</span></span>`);
+            if (params.room) controls.push(`<span class="waveform-param">Room: <span class="value">${params.room}</span></span>`);
+            if (params.delay) controls.push(`<span class="waveform-param">Delay: <span class="value">${params.delay}s</span></span>`);
+            if (params.reverb) controls.push(`<span class="waveform-param">Reverb: <span class="value">${params.reverb}</span></span>`);
+            if (params.amplitude) controls.push(`<span class="waveform-param">Amplitude: <span class="value">${params.amplitude}</span></span>`);
+            if (params.lowpass) controls.push(`<span class="waveform-param">LPF: <span class="value">${params.lowpass}Hz</span></span>`);
+            if (params.octave) controls.push(`<span class="waveform-param">Octave: <span class="value">${params.octave}</span></span>`);
+            if (params.chorus) controls.push(`<span class="waveform-param">Chorus: <span class="value">${params.chorus}</span></span>`);
+            
+            return controls.join('');
+        }
+
+        function drawWaveform(canvas, params) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw grid
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < height; i += 30) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(width, i);
+                ctx.stroke();
+            }
+            
+            // Draw waveform
+            ctx.strokeStyle = '#00ff41';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const frequency = 2;
+            const amplitude = params.amplitude || 0.8;
+            
+            for (let x = 0; x < width; x++) {
+                let y;
+                const t = (x / width) * 4 * Math.PI;
+                
+                switch (params.type) {
+                    case 'square':
+                        y = Math.sign(Math.sin(t * frequency)) * amplitude;
+                        break;
+                    case 'sawtooth':
+                        y = (2 * ((t * frequency) % (2 * Math.PI)) / (2 * Math.PI) - 1) * amplitude;
+                        break;
+                    case 'sine':
+                    default:
+                        y = Math.sin(t * frequency) * amplitude;
+                        break;
+                }
+                
+                if (params.decay) {
+                    y *= Math.exp(-t * params.decay);
+                }
+                
+                const pixelY = height / 2 + (y * height / 2) * 0.8;
+                
+                if (x === 0) {
+                    ctx.moveTo(x, pixelY);
+                } else {
+                    ctx.lineTo(x, pixelY);
+                }
+            }
+            
+            ctx.stroke();
+        }
+
+        function animateSpectrum(display) {
+            const bars = display.querySelectorAll('.spectrum-bar');
+            
+            setInterval(() => {
+                bars.forEach(bar => {
+                    const newHeight = Math.random() * 80 + 10;
+                    bar.style.height = `${newHeight}%`;
+                });
+            }, 200);
+        }
+
+        function typeWriter(element, text, delay) {
+            element.style.opacity = '1';
+            element.innerHTML = '';
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML = formatOutput(text.substring(0, i + 1));
+                    i++;
+                    setTimeout(type, delay);
+                } else {
+                    // Add cursor blink animation at the end briefly
+                    element.innerHTML = formatOutput(text) + '<span class="typing-animation">|</span>';
+                    setTimeout(() => {
+                        element.innerHTML = formatOutput(text);
+                    }, 1000);
+                }
+            }
+            
+            type();
+        }
+
+        function formatOutput(text) {
+            return text
+                .replace(/\n/g, '<br>')
+                .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+                .replace(/(&#x2705;|&#x274C;|&#x26A0;&#xFE0F;|&#x1F512;|&#x1F30A;|&#x1F4E1;|&#x1F5A5;&#xFE0F;|&#x1F50D;|&#x1F680;|&#x1F4A1;)/g, '<span style="display: inline-block; margin-right: 4px;">$1</span>');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+                output.className = `output ${cmdData.type}`;
+                output.textContent = cmdData.output;
+                terminal.appendChild(output);
+            } else {
+                const output = document.createElement('div');
+                output.className = 'output error';
+                output.textContent = `jawta: command not found: ${command.split(' ')[0]}`;
+                terminal.appendChild(output);
+            }
+            
+            // Add input line back
+            terminal.appendChild(inputLine);
+            
+            // Scroll to bottom
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearTerminal() {
+            const terminal = document.getElementById('interactive-terminal-content');
+            terminal.innerHTML = `
+                <div class="command-line animate-fade-in-up">
+                    <span class="prompt">jawta@demo:~$</span>
+                    <input type="text" id="terminal-input" class="command bg-transparent border-none outline-none text-white flex-1" placeholder="Type a command... (Try: jawta --help)" onkeypress="handleTerminalInput(event)" autocomplete="off">
+                </div>
+            `;
+            // Focus on the new input
+            setTimeout(() => {
+                const input = document.getElementById('terminal-input');
+                if (input) input.focus();
+            }, 100);
+        }
+
+        function copyTerminalOutput() {
+            const terminal = document.getElementById('interactive-terminal-content');
+            const text = terminal.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                // Enhanced visual feedback
+                const copyBtn = event.target;
+                const originalText = copyBtn.textContent;
+                const originalClass = copyBtn.className;
+                
+                copyBtn.textContent = '&#x2705; Copied!';
+                copyBtn.className = originalClass + ' text-green-400';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.className = originalClass;
+                }, 1500);
+            }).catch(() => {
+                // Fallback feedback
+                const copyBtn = event.target;
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '&#x274C; Failed';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1500);
+            });
+        }
+
+        function resetDemo() {
+            const terminal = document.getElementById('interactive-terminal-content');
+            terminal.innerHTML = `
+                <div class="command-line animate-fade-in-up">
+                    <span class="prompt">jawta@demo:~$</span>
+                    <span class="command">jawta --help</span>
+                </div>
+                <div class="output info animate-fade-in-up" style="animation-delay: 0.2s;">JAWTA Terminal v0.3.0 - Signal Processing CLI
+
+Usage: jawta [command] [options]
+
+Commands:
+  text        Text processing utilities (morse, t9, ascii, unicode)
+  crypto      Encryption and decryption tools
+  signal      Signal analysis and generation
+  stego       Steganography utilities
+  translate   Custom language translation
+  batch       Batch processing
+  interactive Start interactive mode
+  system      System diagnostics and info
+  rf          RF analysis and monitoring
+
+Examples:
+  jawta text morse "HELLO"          Convert text to Morse code
+  jawta crypto encrypt "secret"     Encrypt data with various methods
+  jawta signal generate --type sine Generate test signals
+  jawta stego hide "msg" image.png  Hide messages in images
+  jawta rf scan --freq 2.4GHz       Scan RF spectrum
+
+Type 'jawta [command] --help' for detailed information.</div>
+                <div class="command-line animate-fade-in-up" style="animation-delay: 0.4s;">
+                    <span class="prompt">jawta@demo:~$</span>
+                    <input type="text" id="terminal-input" class="command bg-transparent border-none outline-none text-white flex-1" placeholder="Type a command... (Try: jawta --help)" onkeypress="handleTerminalInput(event)" autocomplete="off">
+                </div>
+            `;
+            // Focus on the new input
+            setTimeout(() => {
+                const input = document.getElementById('terminal-input');
+                if (input) input.focus();
+            }, 600);
+        }
+
+        // Typing animation for hero terminal
+        const typingCommands = [
+            'jawta interactive',
+            'jawta text morse "EMERGENCY"',
+            'jawta crypto encrypt "classified"',
+            'jawta signal test --freq 2400',
+            'jawta stego hide "secret" message.txt'
+        ];
+        
+        let currentCommandIndex = 0;
+        let currentCharIndex = 0;
+        
+        function typeCommand() {
+            const typingElement = document.getElementById('typing-command');
+            if (!typingElement) return;
+            
+            const currentCommand = typingCommands[currentCommandIndex];
+            
+            if (currentCharIndex <= currentCommand.length) {
+                typingElement.textContent = currentCommand.substring(0, currentCharIndex);
+                currentCharIndex++;
+                setTimeout(typeCommand, 100);
+            } else {
+                setTimeout(() => {
+                    currentCharIndex = 0;
+                    currentCommandIndex = (currentCommandIndex + 1) % typingCommands.length;
+                    typeCommand();
+                }, 2000);
+            }
+        }
+        
+        // Launch terminal button
+        document.getElementById('launch-terminal-btn').addEventListener('click', function() {
+            document.getElementById('interactive-terminal').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+            
+            // Focus on terminal input
+            setTimeout(() => {
+                const input = document.getElementById('terminal-input');
+                if (input) input.focus();
+            }, 1000);
+        });
+        
+        // Start typing animation
+        setTimeout(typeCommand, 2000);
+        
+        // Add some interactive elements
+        window.addEventListener('load', function() {
+            // Add floating elements animation
+            const floatingElements = document.querySelectorAll('.floating-element');
+            floatingElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 3}s`;
+                element.style.left = `${Math.random() * 80 + 10}%`;
+            });
+            
+            // Auto-focus on terminal input
+            setTimeout(() => {
+                const terminalInput = document.getElementById('terminal-input');
+                if (terminalInput) {
+                    terminalInput.focus();
+                }
+            }, 1000);
+            
+            // Add welcome message animation
+            const welcomeMessage = document.createElement('div');
+            welcomeMessage.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(6, 182, 212, 0.9);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 14px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                pointer-events: none;
+            `;
+            welcomeMessage.textContent = '&#x1F4BB; Terminal ready! Click below to start...';
+            document.body.appendChild(welcomeMessage);
+            
+            setTimeout(() => {
+                welcomeMessage.style.opacity = '1';
+            }, 2000);
+            
+            setTimeout(() => {
+                welcomeMessage.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(welcomeMessage);
+                }, 300);
+            }, 4000);
+        });
+    </script>
+</body>
+</html>
