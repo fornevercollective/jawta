@@ -39,7 +39,7 @@
 ## 🚀 GitHub Deployment Steps
 
 ### Step 1: Upload Files
-Replace your repository files with contents of `jawta-v0.3.1-deployment/`:
+Replace your repository files with contents of `releases/jawta-v0.3.1-deployment/`:
 
 ```bash
 # Core files to update:
@@ -72,17 +72,17 @@ git push origin v0.3.1
 
 After deployment, users can access:
 
-1. **Main Application:** `https://yourusername.github.io/jawta/`
+1. **Main Application:** `https://fornevercollective.github.io/jawta/`
    - Full React app with all signal processing tools
    - Modern Figma-inspired UI
    - Mobile responsive design
 
-2. **Terminal Interface:** `https://yourusername.github.io/jawta/terminal.html`
+2. **Terminal Interface:** `https://fornevercollective.github.io/jawta/terminal.html`
    - Standalone CLI showcase page
    - Interactive terminal emulator
    - Complete command documentation
 
-3. **CLI System:** `https://yourusername.github.io/jawta/jawta+term/`
+3. **CLI System:** `https://fornevercollective.github.io/jawta/jawta+term/`
    - Terminal CLI installation files
    - Cross-platform compatibility
    - Usage documentation
@@ -185,7 +185,7 @@ Assets: 150+ KB (JAWTA branding, icons, images)
 
 The complete modernized JAWTA Signal Processing application is now packaged and ready for GitHub deployment. All features are operational, the UI is polished with Figma-inspired design, and the terminal interface provides comprehensive CLI functionality.
 
-**Download:** `jawta-v0.3.1-deployment.zip`  
+**Download:** `fornevercollective.github.com/jawta/releases/jawta-v0.3.1-deployment.zip`  
 **Size:** 859 KB  
 **Status:** 🟢 Production Ready  
 **Quality:** ⭐⭐⭐⭐⭐ Enterprise Grade

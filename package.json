@@ -96,9 +96,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jawta/signal-processing.git"
+    "url": "https://github.com/forevercollective/jawta.git"
   },
-  "homepage": "https://jawta-signal.github.io/",
+  "homepage": "https://fornevercollective.github.io/jawta/index.html",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"

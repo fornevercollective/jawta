@@ -72,7 +72,7 @@ function AppContent() {
   const [showThemeTest, setShowThemeTest] = useState(false); // For testing theme
   const [showAdvancedTools, setShowAdvancedTools] = useState(false);
   const [showASCIIStream, setShowASCIIStream] = useState(false);
-  const [streamRepositoryUrl, setStreamRepositoryUrl] = useState('https://api.github.com/repos/jawta/live-stream/contents/');
+  const [streamRepositoryUrl, setStreamRepositoryUrl] = useState('https://api.github.com/fornevercollective/jawta/live-stream/contents/');
   
   // Handle tab changes from quick access panel
   const handleTabChange = (tab: string) => {

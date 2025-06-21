@@ -617,7 +617,7 @@ A comprehensive signal processing and intelligence application built with React 
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/jawta.git
+git clone https://github.com/fornevercollective/jawta.git
 cd jawta
 
 # Install dependencies
