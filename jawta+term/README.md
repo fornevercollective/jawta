@@ -36,7 +36,7 @@ JAWTA Terminal is a cutting-edge web-based terminal interface designed for signa
 ## &#x1F680; Quick Start
 
 ### Online Access
-Visit [JAWTA Terminal](https://jawta-signal.github.io/terminal.html) to use the web interface immediately.
+Visit [JAWTA Terminal(https://fornevercollective.github.io/jawta/terminal.html) to use the web interface immediately.
 
 ### Local Development
 ```bash
